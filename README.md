@@ -1,6 +1,10 @@
 
 # 'tubs' cutting edge lazily evaluated table editor
 
+## Disclaimer
+
+AI ASSISTED
+
 ## All possible expressions with their precedence (from lowest to highest)
 1. for ... do ...  /  if ... then ... else ...
 2. Range operator ( .. )
