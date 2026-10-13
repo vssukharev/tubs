@@ -6,27 +6,11 @@ import org.tubs.utils.{Todo, Unreachable}
 import org.tubs.table.CellKey
 import org.tubs.view
 
-enum BinaryOp(str: String):
-  case Range extends BinaryOp("..")
-  case Plus  extends BinaryOp("+")
-  case Minus extends BinaryOp("-")
-  case Prod  extends BinaryOp("*")
-  case Div   extends BinaryOp("/")
-  case Mod   extends BinaryOp("mod")
-  case Power extends BinaryOp("^")
-  case Lt    extends BinaryOp("<")
-  case Gt    extends BinaryOp(">")
-  case Le    extends BinaryOp("<=")
-  case Ge    extends BinaryOp(">=")
-  case Eq    extends BinaryOp("==")
-  case Neq   extends BinaryOp("!=")
-  case And   extends BinaryOp("and")
-  case Or    extends BinaryOp("or")
+enum BinaryOp:
+  case Range, Plus, Minus, Prod, Div, Mod, Power, Lt, Gt, Le, Ge, Eq, Neq, And, Or     
 
-enum UnaryOp(str: String):
-  case Plus  extends UnaryOp("+")
-  case Minus extends UnaryOp("-")
-  case Not   extends UnaryOp("not")
+enum UnaryOp:
+  case Plus, Minus, Not
 
 enum CellCoord:
   case Static(index: Int)

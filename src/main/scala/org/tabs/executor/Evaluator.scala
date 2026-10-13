@@ -18,6 +18,7 @@ object CellSymbols:
     def get(name: String): Option[ExprValue] = cs.get(name)
     def update(name: String, v: ExprValue): Unit = cs.put(name, v)
     def contains(name: String): Boolean = cs.contains(name)
+
 /**
  * Organizes the table evaluation process, performing dynamic
  * type check via type checker and then calculating the result.
@@ -34,13 +35,13 @@ class Evaluator:
    * In case of error, returns ExprValue.VError, which leads
    * all dependent cells to also have ExprValue.VError.
    */
-  def eval(prevKey: CellKey, curKey: CellKey, content: CellContent)(using context: Table): ExprValue =
-    content.addDependent(prevKey)
-    eval(curKey, content)
-
   def eval(key: CellKey, content: CellContent)(using context: Table): ExprValue =
     var symbols = CellSymbols()
     VError
+
+  def eval(prevKey: CellKey, curKey: CellKey, content: CellContent)(using context: Table): ExprValue =
+    content.addDependent(prevKey)
+    eval(curKey, content)
 
   /**
    * Helper overloading for eval 
