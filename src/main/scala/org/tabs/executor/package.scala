@@ -3,7 +3,7 @@ package org.tubs.executor
 
 import upickle.default.*
 
-import scala.collection.mutable.Set
+import scala.collection.mutable.{Set, Stack}
 import org.tubs.table.*
 import org.tubs.utils.Todo
 import org.tubs.view
@@ -31,9 +31,10 @@ class CellContent(
   import ExprValue.*
   import ExprValueOpt.*
 
-  private var _ast        = CellAST(key, _formula)
-  private val _dependents = Set[CellKey]()
+  private var _ast          = CellAST(key, _formula)
+  private val _dependents   = Set[CellKey]()
   private val _dependencies = Set[CellKey]()
+  private val _symbols      = Stack[(String, ExprValue)]()
 
   /**
    * Private members getters
@@ -45,7 +46,7 @@ class CellContent(
   /**
    * Retrieves a value from this CellContent lazily and handles circular dependencies
    */
-  def value(using evaluator: Evaluator, context: Table): ExprValue = _vopt match
+  def value(using context: Table): ExprValue = _vopt match
     case Result(v) => v
     case Pending =>
       view.error(s"Circular dependency detected on cell $key")
@@ -53,7 +54,7 @@ class CellContent(
       VError
     case Empty =>
       _vopt = Pending
-      val res = evaluator.eval(key, this)
+      val res = Evaluator.eval(key, this)
       _vopt = Result(res)
       res
 
@@ -64,30 +65,30 @@ class CellContent(
     _dependents -= depKey
 
   /**
-   * Set cell's value to empty, recursively resetting
-   * all of the dependent cells.
-   */
-  def reset()(using context: Table): Unit =
-    if _vopt != ExprValueOpt.Empty then
-      _vopt = ExprValueOpt.Empty
-      for depKey <- _dependents do
-        context.get(depKey).foreach(_.content.reset())
-
-  /**
    * Traverses dependencies and deletes instance of this cell 
    * in their _dependents
    */
-  def unsubscribe()(using context: Table): Unit =
+  def removeDependencies()(using context: Table): Unit =
     for depKey <- _dependencies do
       context.get(depKey).foreach(_.content.removeDependent(key))
     _dependencies.clear()
 
   /**
+   * Set cell's value to empty, recursively resetting
+   * all of the dependent cells.
+   */
+  def resetValue()(using context: Table): Unit =
+    if _vopt != ExprValueOpt.Empty then
+      _vopt = ExprValueOpt.Empty
+      for depKey <- _dependents do
+        context.get(depKey).foreach(_.content.resetValue())
+
+  /**
    * Updates the formula and rebuilds AST
    */
   def refresh(newFormula: String)(using context: Table): Unit =
-    unsubscribe()
-    reset()
+    removeDependencies()
+    resetValue()
     _formula = newFormula
     _ast = CellAST(key, _formula)
 

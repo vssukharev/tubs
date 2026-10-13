@@ -52,14 +52,15 @@ object CellAST:
           view.error(s"Syntax error in $key: ${failure.msg}")
           CellAST.SyntaxError
 
-/**
- * Converts column letters to the corresponding index in Table
- */
-def colLettersToIndex(letters: String): Int =
-  letters.foldLeft(0)((acc, c) => acc * 26 + (c - 'A' + 1))
 
 object FormulaParser extends RegexParsers:
   private val keywords = Set("if", "then", "else", "for", "in", "do", "mod", "and", "or", "not", "true", "false")
+
+  /**
+   * Converts column letters to the corresponding index in Table
+   */
+  def colLettersToIndex(letters: String): Int =
+    letters.foldLeft(0)((acc, c) => acc * 26 + (c - 'A' + 1))
 
   // --- Top-level Expression ---
   def expr: Parser[CellAST] = forExpr | ifExpr | rangeExpr 

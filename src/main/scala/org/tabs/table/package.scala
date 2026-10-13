@@ -68,7 +68,7 @@ object CellKey:
         else Ordering.Int.compare(x.rowId, y.rowId)
 
 
-case class Cell(content: CellContent, appearance: CellAppearance = CellAppearance()) derives ReadWriter
+case class Cell(content: CellContent, var appearance: CellAppearance = CellAppearance()) derives ReadWriter
 
 /**
  * Properties of cell, impacting only the appearance
