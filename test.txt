@@ -1,0 +1,1 @@
+{"cells":[{"content":{"key":"\"1:1\"","formula":"= 4 mod 3","value":"null"}},{"content":{"key":"\"2:1\"","formula":"= A1 mod 5","value":"null"}}],"rows":[],"cols":[]}

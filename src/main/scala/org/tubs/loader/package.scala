@@ -9,7 +9,13 @@ import scala.io.Source
 import org.tubs.utils.Todo
 import org.tubs.table.Table
 
-// TODO: get rid of Source
-def load(path: String): Try[Table] = Using(Source.fromFile(path))((src: Source) => read[Table](src.mkString))
-def save(path: String, t: Table): Try[Unit] = Using(FileWriter(path))(_.write(write(t)))
+def load(path: String): Try[Table] = 
+  Using( Source.fromFile(path) ) {
+    src => read[Table](src.mkString)
+  }
+
+def save(path: String, t: Table): Try[Unit] = 
+  Using( FileWriter(path) ) {
+    wter => wter.write(write(t, 2))
+  }
 

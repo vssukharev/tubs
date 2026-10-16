@@ -75,7 +75,7 @@ class CellContent(
    */
   def removeDependencies()(using context: Table): Unit =
     for depKey <- _dependencies do
-      context.get(depKey).foreach(_.content.removeDependent(key))
+      context.getCell(depKey).foreach(_.content.removeDependent(key))
     _dependencies.clear()
 
   /**
@@ -86,21 +86,30 @@ class CellContent(
     if _vopt != ExprValueOpt.Empty then
       _vopt = ExprValueOpt.Empty
       for depKey <- _dependents do
-        context.get(depKey).foreach(_.content.resetValue())
+        context.getCell(depKey).foreach(_.content.resetValue())
 
   /**
    * Sends a message to a user mentioning the current cell 
    */
   def error(msg: String)(using content: CellContent): ExprValue =
-    view.error(s"Error in ${content.key} cell: " + msg)
+    view.error(s"In ${content.key} cell: " + msg)
     VError
 
+  /**
+   * Dependent cells manipulation methods
+   */
   def addDependent(depKey: CellKey): Unit    = _dependents += depKey
   def removeDependent(depKey: CellKey): Unit = _dependents -= depKey
 
+  /**
+   * Variables stack manipulation methods
+   */
   def pushSymbol(id: String, value: ExprValue): Unit = _symbols.push(id -> value)
-  def popSymbol(): Unit                              = _symbols.pop()
+  def popSymbol(): ExprValue                         = _symbols.pop()._2
   def getSymbolValue(id: String): Option[ExprValue]  = _symbols.findLast(_._1 == id).map(_._2)
+  def changeSymbolValue(id: String, value: ExprValue): Unit = 
+    val i = _symbols.lastIndexWhere(_._1 == id)
+    _symbols.update(i, id -> value)
 
 /**
  * Companion object for CellContent with contructors
@@ -177,7 +186,7 @@ enum ExprValue derives ReadWriter:
   case VBoolean(v: Boolean)  
   case VInteger(v: Int)      
   case VFloating(v: Double)  
-  case VRange(l: Int, u: Int)
+  case VRange(l: Int, r: Int)
   case VString(v: String)
   case VError
 

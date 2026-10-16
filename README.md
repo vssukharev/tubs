@@ -23,5 +23,7 @@ AI ASSISTED:
   3. cell references - B2, B\[i], \[j]2, \[i]\[j]
 
 ## TODO
-1. Help page for user interface
+- Loader of Table can write but not read
+- Help page for user interface
+- CellKey toString override
 

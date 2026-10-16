@@ -6,8 +6,8 @@ import scala.math.Ordering
 import java.io.OutputStream
 import upickle.default.*
 
-import org.tubs.executor.CellContent
-import org.tubs.utils.Color
+import org.tubs.executor.{CellContent, ExprValue}
+import org.tubs.utils.{Color, Todo}
 
 /**
  * Table contains all semantic information about 
@@ -23,7 +23,50 @@ class Table:
   val rows = ArrayBuffer[Row]()
   val cols = ArrayBuffer[Column]()
 
-  def get(key: CellKey): Option[Cell] = cells.get(key)
+  /**
+   * Sets formula under particular cell to the new one
+   */
+  def set(key: CellKey, formula: String): Cell = setContent(key, formula, () => CellContent(key, formula))
+
+  /**
+   * Same as setFormula but also sets a value. 
+   * Warning: should be used only in serialization
+   * or deserialization to avoid formula-value mismatch.
+   */
+  def set(key: CellKey, formula: String, value: ExprValue): Cell = setContent(key, formula, () => CellContent(key, formula, value))
+
+  /**
+   * Gets a cell under specified key
+   */
+  def getCell(key: CellKey): Option[Cell] = cells.get(key)
+
+  /**
+   * Retrieves a value under specified key.
+   * If there is no cell under such key, returns
+   * empty VString.
+   */
+  def get(key: CellKey): ExprValue =
+    getCell(key) match
+      case Some(res) => res.content.value(using this)
+      case None      => ExprValue.VString("")
+        
+
+  /**
+   * Helper for setters. 
+   * Parameter newContent is called only when there
+   * is now cell under specified key and the new one
+   * must be constructed.
+   */
+  private inline def setContent(key: CellKey, formula: String, inline newContent: () => CellContent): Cell = cells.updateWith(key) {
+      case Some(cell) => 
+        cell.content.refresh(formula)(using this)
+        Some(cell)
+      case None => 
+        val res = Cell(newContent())
+        cells += key -> res
+        Some(res)
+    }.get
+
 
 object Table:
   given ReadWriter[Table] = readwriter[ujson.Value].bimap(
@@ -58,6 +101,11 @@ object CellKey:
    )
 
   /**
+   * Show the user as <alphaCol>:<row>
+   */
+  override def toString: String = Todo("CellKey toString")
+
+  /**
    * Define lexigraphical ordering
    */
   given Ordering[CellKey] with
@@ -67,6 +115,10 @@ object CellKey:
         then a
         else Ordering.Int.compare(x.rowId, y.rowId)
 
+  /**
+   * Implicit conversion from tuple for conciseness
+   */
+  given Conversion[(Int, Int), CellKey] = (c, r) => CellKey(c, r)
 
 case class Cell(content: CellContent, var appearance: CellAppearance = CellAppearance()) derives ReadWriter
 

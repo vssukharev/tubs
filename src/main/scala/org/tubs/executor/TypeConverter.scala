@@ -54,8 +54,8 @@ object TypeConverter:
   val conversionTable: Map[(ExprType, ExprType), Converter] = Map(
     (TInteger,  TFloating) -> { case VInteger(i)  => VFloating(i.toDouble) },
     (TFloating, TInteger)  -> { case VFloating(d) => VInteger(d.toInt) },
-    (TInteger,  TBoolean)  -> { case VInteger(i)  => VBoolean(i != 0) },
-    (TBoolean,  TInteger)  -> { case VBoolean(b)  => VInteger(if b then 1 else 0) },
+    // (TInteger,  TBoolean)  -> { case VInteger(i)  => VBoolean(i != 0) },
+    // (TBoolean,  TInteger)  -> { case VBoolean(b)  => VInteger(if b then 1 else 0) },
     (TString,   TInteger)  -> { case VString(s)   => 
       s.trim.toIntOption.map(VInteger.apply).getOrElse(VError)
     },
