@@ -7,7 +7,8 @@ import org.tubs.table.CellKey
 import org.tubs.view
 
 enum BinaryOp:
-  case Range, Plus, Minus, Prod, Div, Mod, Power, Lt, Gt, Le, Ge, Eq, Neq, And, Or     
+  case Range, Plus, Minus, Prod, Div, Mod,
+       Power, Lt, Gt, Le, Ge, Eq, Neq, And, Or     
 
 enum UnaryOp:
   case Plus, Minus, Not

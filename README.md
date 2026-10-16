@@ -3,7 +3,10 @@
 
 ## Disclaimer
 
-AI ASSISTED
+AI ASSISTED:
+1. Partially file [src/main/scala/org/tubs/executor/CellParser.scala]
+2. Helped with setting up Json (de)serializer
+3.
 
 ## All possible expressions with their precedence (from lowest to highest)
 1. for ... do ...  /  if ... then ... else ...
@@ -18,4 +21,7 @@ AI ASSISTED
   1. literals - integer, floating, boolean
   2. variables - identifiers starting with lower case letters
   3. cell references - B2, B\[i], \[j]2, \[i]\[j]
+
+## TODO
+1. Help page for user interface
 

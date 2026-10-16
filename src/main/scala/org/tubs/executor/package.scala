@@ -1,6 +1,8 @@
 
 package org.tubs.executor
 
+import scala.compiletime
+import scala.compiletime.erasedValue
 import upickle.default.*
 
 import scala.collection.mutable.{Set, Stack}
@@ -54,15 +56,18 @@ class CellContent(
       VError
     case Empty =>
       _vopt = Pending
-      val res = Evaluator.eval(key, this)
+      val res = Evaluator.eval(this)
       _vopt = Result(res)
       res
 
-  def addDependent(depKey: CellKey): Unit =
-    _dependents += depKey
-
-  def removeDependent(depKey: CellKey): Unit =
-    _dependents -= depKey
+  /**
+   * Updates the formula and rebuilds AST
+   */
+  def refresh(newFormula: String)(using context: Table): Unit =
+    removeDependencies()
+    resetValue()
+    _formula = newFormula
+    _ast = CellAST(key, _formula)
 
   /**
    * Traverses dependencies and deletes instance of this cell 
@@ -84,13 +89,18 @@ class CellContent(
         context.get(depKey).foreach(_.content.resetValue())
 
   /**
-   * Updates the formula and rebuilds AST
+   * Sends a message to a user mentioning the current cell 
    */
-  def refresh(newFormula: String)(using context: Table): Unit =
-    removeDependencies()
-    resetValue()
-    _formula = newFormula
-    _ast = CellAST(key, _formula)
+  def error(msg: String)(using content: CellContent): ExprValue =
+    view.error(s"Error in ${content.key} cell: " + msg)
+    VError
+
+  def addDependent(depKey: CellKey): Unit    = _dependents += depKey
+  def removeDependent(depKey: CellKey): Unit = _dependents -= depKey
+
+  def pushSymbol(id: String, value: ExprValue): Unit = _symbols.push(id -> value)
+  def popSymbol(): Unit                              = _symbols.pop()
+  def getSymbolValue(id: String): Option[ExprValue]  = _symbols.findLast(_._1 == id).map(_._2)
 
 /**
  * Companion object for CellContent with contructors
@@ -123,7 +133,7 @@ object CellContent:
   )
 
 /**
- * All semantic types of expressions and their values.
+ * All semantic types of expressions.
  * Each type is prefixed with T for disambiguation.
  * 
  * Boolean - true or false
@@ -133,14 +143,52 @@ object CellContent:
  * Error - plainly a signal of an error; error message is instantly
  *         revieled to a user via com.tubs.view
  */
+enum ExprType:
+  case TBoolean, TInteger, TFloating, TRange, TString, TError
+  override def toString = this match
+    case TBoolean => "Boolean"
+    case TInteger => "Integer"
+    case TFloating => "Floating"
+    case TRange => "Range"
+    case TString => "String"
+    case TError => "ErrorType"
+
+object ExprType:
+  import ExprValue.*
+
+  transparent inline def fromValue[T <: ExprValue] =
+    inline erasedValue[T] match
+      case _: VBoolean    => TBoolean
+      case _: VInteger    => TInteger
+      case _: VFloating   => TFloating
+      case _: VRange      => TRange
+      case _: VString     => TString
+      case _: VError.type => TError
+      case _: ExprValue   => compiletime.error("fromValue got ExprValue type")
+      case _              => compiletime.error("fromValue has retrieved an unknown type")
+
+
+/**
+ * Values for the types above
+ */
 enum ExprValue derives ReadWriter:
+  import ExprType.*
+
   case VBoolean(v: Boolean)  
   case VInteger(v: Int)      
   case VFloating(v: Double)  
   case VRange(l: Int, u: Int)
-  case VString(str: String)
+  case VString(v: String)
   case VError
-  
+
+  def exprType: ExprType = this match
+    case VBoolean(_)  => fromValue[VBoolean]
+    case VInteger(_)  => fromValue[VInteger]
+    case VFloating(_) => fromValue[VFloating]
+    case VRange(_, _) => fromValue[VRange]
+    case VString(_)   => fromValue[VString]
+    case VError       => fromValue[VError.type]
+
 /**
  * Cell traverse state, which is typically used for
  * Evaluator and TypeChecker in order to handle intermediate
