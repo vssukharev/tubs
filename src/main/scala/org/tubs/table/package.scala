@@ -87,7 +87,7 @@ object Table:
  * CellKey in combination with Cell fully represent
  * a cell with all mutable data needed.
  */
-case class CellKey(colId: Int, rowId: Int):
+case class CellKey(colId: Int, rowId: Int) derives ReadWriter:
   /**
    * Show to the user as <alphaCol><rowInt> - typical excel style
    */
@@ -102,16 +102,6 @@ case class CellKey(colId: Int, rowId: Int):
     sb.reverseInPlace().append(rowId).toString
 
 object CellKey:
-  /**
-   * Serialize to <col>:<row>
-   */
-  given ReadWriter[CellKey] = readwriter[String].bimap(
-    k => s"${k.colId}:${k.rowId}",
-    s => 
-      val Array(c, r) = s.split(":")
-      CellKey(c.toInt, r.toInt)
-   )
-
   /**
    * Define lexigraphical ordering
    */

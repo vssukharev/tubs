@@ -206,12 +206,12 @@ object Evaluator:
       (ap, bp) match
         case (Available(t1), Available(t2)) => 
           subtypesCompare(at, bt) match
-            case -1 => t1().map(a => op(a, b))
+            case -1 => for a <- t1() yield op(a, b)
             case  0 => content.error(s"Ambiguous conversion between types $at and $bt")
-            case  1 => t2().map(b => op(a, b))
+            case  1 => for b <- t2() yield op(a, b)
 
-        case (Available(t), Fail) => t().map(a => op(a, b))
-        case (Fail, Available(t)) => t().map(b => op(a, b))
+        case (Available(t), Fail) => for a <- t() yield op(a, b)
+        case (Fail, Available(t)) => for b <- t() yield op(a, b)
         case (Fail, Fail)         => content.error(s"Incompatible types $at and $bt in binary operation.")
 
   /**

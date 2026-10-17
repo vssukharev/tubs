@@ -14,7 +14,7 @@ def load(path: String): Try[Table] =
     src => read[Table](src.mkString)
   }
 
-def save(path: String, t: Table): Try[Unit] = 
+def save(t: Table, path: String): Try[Unit] = 
   Using( FileWriter(path) ) {
     wter => wter.write(write(t, 2))
   }

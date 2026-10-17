@@ -23,6 +23,5 @@ AI ASSISTED:
   3. cell references - B2, B\[i], \[j]2, \[i]\[j]
 
 ## TODO
-- Loader of Table can write but not read
 - Help page for user interface
 

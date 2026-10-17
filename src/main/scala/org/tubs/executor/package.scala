@@ -128,14 +128,14 @@ object CellContent:
    */
   given ReadWriter[CellContent] = readwriter[ujson.Value].bimap(
     obj => ujson.Obj(
-      "key"     -> write(obj.key),
+      "key"     -> writeJs(obj.key),
       "formula" -> obj.formula,
-      "value"   -> write(obj.vopt.toOption)
+      "value"   -> writeJs(obj.vopt.toOption)
     ),
     json => 
-      val key = read[CellKey](json("key"))
+      val key     = read[CellKey](json("key"))
       val formula = read[String](json("formula"))
-      val value = read[Option[ExprValue]](json("value"))
+      val value   = read[Option[ExprValue]](json("value"))
       value match
         case Some(x) => CellContent(key, formula, x)
         case None    => CellContent(key, formula)
