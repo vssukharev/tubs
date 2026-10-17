@@ -91,8 +91,8 @@ class CellContent(
   /**
    * Sends a message to a user mentioning the current cell 
    */
-  def error(msg: String)(using content: CellContent): ExprValue =
-    view.error(s"In ${content.key} cell: " + msg)
+  def error(msg: String): ExprValue =
+    view.error(s"In $key cell: " + msg)
     VError
 
   /**
@@ -197,6 +197,32 @@ enum ExprValue derives ReadWriter:
     case VRange(_, _) => fromValue[VRange]
     case VString(_)   => fromValue[VString]
     case VError       => fromValue[VError.type]
+  
+  /**
+   * If VError, return VError, otherwise apply f
+   */
+  def map(f: ExprValue => ExprValue): ExprValue = this match
+    case VError => VError
+    case valid  => f(valid)
+
+  /**
+   * Same as map
+   */
+  def flatMap(f: ExprValue => ExprValue): ExprValue = map(f)
+
+  /**
+   * Invalid values are filtered as VError
+   */
+  def withFilter(p: ExprValue => Boolean): ExprValue = this match
+    case VError => VError
+    case valid if p(valid) => valid
+    case _ => VError
+
+  /**
+   * Unboxes the value of this, converting it to the particular ExprValue.
+   * Warning: must be used when being absolutely sure regarding the type.
+   */
+  inline def unbox[T <: ExprValue]: T = this.asInstanceOf[T]
 
 /**
  * Cell traverse state, which is typically used for

@@ -6,7 +6,7 @@ import scala.math.Ordering
 import java.io.OutputStream
 import upickle.default.*
 
-import org.tubs.executor.{CellContent, ExprValue}
+import org.tubs.executor.{CellContent, ExprValue, FormulaParser}
 import org.tubs.utils.{Color, Todo}
 
 /**
@@ -87,7 +87,19 @@ object Table:
  * CellKey in combination with Cell fully represent
  * a cell with all mutable data needed.
  */
-case class CellKey(colId: Int, rowId: Int)
+case class CellKey(colId: Int, rowId: Int):
+  /**
+   * Show to the user as <alphaCol><rowInt> - typical excel style
+   */
+  override def toString: String =
+    val sb = new StringBuilder()
+    var c = colId
+    while (c > 0) {
+      val remainder = (c - 1) % 26
+      sb.append(('A' + remainder).toChar)
+      c = (c - 1) / 26
+    }
+    sb.reverseInPlace().append(rowId).toString
 
 object CellKey:
   /**
@@ -99,11 +111,6 @@ object CellKey:
       val Array(c, r) = s.split(":")
       CellKey(c.toInt, r.toInt)
    )
-
-  /**
-   * Show the user as <alphaCol>:<row>
-   */
-  override def toString: String = Todo("CellKey toString")
 
   /**
    * Define lexigraphical ordering

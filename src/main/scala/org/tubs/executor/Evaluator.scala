@@ -109,12 +109,12 @@ object Evaluator:
   )(
     using CellContent, Table
   ): ExprValue =
-    val a = eval(cond)
-    if a == VError then 
-      VError
-    else
-      val ap = convertStatic[VBoolean](a)
-      if ap.v then eval(thenBranch)
+    for
+      aOrig <- eval(cond)
+      aConv <- convertStatic[VBoolean](aOrig)
+    yield
+      val a = aConv.unbox[VBoolean]
+      if a.v then eval(thenBranch)
       else        eval(elseBranch)
 
   def evalFor(
@@ -129,15 +129,19 @@ object Evaluator:
     boundary:
       val rangeOrig = eval(rangeNode)
       if rangeOrig == VError then break(VError)
-      val range = convertStatic[VRange](rangeOrig)
+
+      val rangeConv = convertStatic[VRange](rangeOrig)
+      if rangeConv == VError then break(VError)
+
+      val range = rangeConv.unbox[VRange]
 
       if range.l > range.r then break(content.error(s"Got from > to when trying to iterate on range ${range.l}..${range.r}"))
 
       var acc = eval(initNode)
       if acc == VError then break(VError)
-      content.pushSymbol(accName, acc)
 
       var i = range.l
+      content.pushSymbol(accName, acc)
       content.pushSymbol(itName, VInteger(i))
 
       while i <= range.r do
@@ -158,26 +162,30 @@ object Evaluator:
   def evalCellRef(colc: CellCoord, rowc: CellCoord)(using content: CellContent, context: Table): ExprValue = 
     import CellCoord.*
 
-    def coordToIndex(c: CellCoord) = c match
-      case Static(i)     => i
-      case Dynamic(expr) => convertStatic[VInteger](eval(expr)).v
+    def coordToValue(c: CellCoord): ExprValue = c match
+      case Static(i)     => VInteger(i)
+      case Dynamic(expr) => for v <- eval(expr) yield convertStatic[VInteger](v)
 
-    val col = coordToIndex(colc)
-    val row = coordToIndex(rowc)
-    val key = CellKey(col, row)
+    for
+      colValue <- coordToValue(colc)
+      rowValue <- coordToValue(rowc)
+    yield
+      val col = colValue.unbox[VInteger].v
+      val row = rowValue.unbox[VInteger].v
+      val key = CellKey(col, row)
 
-    if col < 1 then
-      content.error(s"Negative column when trying to access cell $key")
-    else if row < 1 then
-      content.error(s"Negative row when trying to access cell $key")
-    else
-      val target = context.getCell(key)
-      target match
-        case Some(target) => 
-          target.content.addDependent(content.key)
-          target.content.value // Note: here the circular dependencies are handled
-        case None => 
-          content.error(s"Cell $key is empty and can't be referenced")
+      if col < 1 then
+        content.error(s"Negative column when trying to access cell $key")
+      else if row < 1 then
+        content.error(s"Negative row when trying to access cell $key")
+      else
+        val target = context.getCell(key)
+        target match
+          case Some(target) => 
+            target.content.addDependent(content.key)
+            target.content.value // Note: here the circular dependencies are handled
+          case None => 
+            content.error(s"Cell $key is empty and can't be referenced")
 
   // --------------- Helpers --------------
 
@@ -196,24 +204,33 @@ object Evaluator:
       val ap = convert(a, bt)
       val bp = convert(b, at)
       (ap, bp) match
-        case (Available(_), Available(_)) => content.error(s"Ambiguous conversion between types $at and $bt in binary operation.")
-        case (Available(t), Fail)         => op(t(), b)
-        case (Fail, Available(t))         => op(a, t())
-        case (Fail, Fail)                 => content.error(s"Incompatible types $at and $bt in binary operation.")
+        case (Available(t1), Available(t2)) => 
+          subtypesCompare(at, bt) match
+            case -1 => t1().map(a => op(a, b))
+            case  0 => content.error(s"Ambiguous conversion between types $at and $bt")
+            case  1 => t2().map(b => op(a, b))
+
+        case (Available(t), Fail) => t().map(a => op(a, b))
+        case (Fail, Available(t)) => t().map(b => op(a, b))
+        case (Fail, Fail)         => content.error(s"Incompatible types $at and $bt in binary operation.")
 
   /**
    * Evaluates binary expression, whose operand types are fixed (static) and should
    * be known for any input.
    */
   inline def evalBinaryStatic[T <: ExprValue](a: ExprValue, b: ExprValue)[R <: ExprValue](op: (T, T) => R)(using CellContent, Table): ExprValue =
-    val ap = convertStatic[T](a)
-    val bp = convertStatic[T](b)
-    op(ap, bp)
+    for
+      aConv <- convertStatic[T](a)
+      bConv <- convertStatic[T](b)
+    yield
+      op(aConv.unbox[T], bConv.unbox[T])
 
   /**
    * Same semantics as for binary but for unary
    */
   inline def evalUnaryStatic[T <: ExprValue](a: ExprValue)[R <: ExprValue](op: T => R)(using CellContent, Table): ExprValue =
-    val ap = convertStatic[T](a)
-    op(ap)
+    for
+      aConv <- convertStatic[T](a)
+    yield
+      op(aConv.unbox[T])
 

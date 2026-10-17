@@ -6,7 +6,7 @@
 AI ASSISTED:
 1. Partially file [src/main/scala/org/tubs/executor/CellParser.scala]
 2. Helped with setting up Json (de)serializer
-3.
+3. Scala metaprogramming assistance
 
 ## All possible expressions with their precedence (from lowest to highest)
 1. for ... do ...  /  if ... then ... else ...
@@ -25,5 +25,4 @@ AI ASSISTED:
 ## TODO
 - Loader of Table can write but not read
 - Help page for user interface
-- CellKey toString override
 
