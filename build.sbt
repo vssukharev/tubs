@@ -5,11 +5,12 @@ scalaVersion := "3.9.0"
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0",
   "com.lihaoyi" %% "upickle" % "4.4.3",
-  "org.scalatest" %% "scalatest" % "3.2.19" % Test
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
+  "org.scalafx" %% "scalafx" % "27.0.0-R39",
 )
 
 Compile / console / initialCommands := """
-  import org.tubs.{_, given}
+  import org.tubs.{*, given}
   import scala.language.implicitConversions
   import org.tubs.executor._
   import org.tubs.loader._

@@ -2,11 +2,16 @@
 package org.tubs
 
 import scala.util.{Try, Success, Failure}
+import scalafx.application.JFXApp3
+
 import org.tubs.view.*
 import org.tubs.table.Table
 
-object Main:
-  def main(filename: String) =
+object Main extends JFXApp3:
+
+  override def start(): Unit =
+    val filename = "test.txt"
+
     info("Loading " + filename)
     val table = loader.load(filename) match
       case Success(v) => v
@@ -16,4 +21,9 @@ object Main:
 
     println("Resulting table:")
     println(table.toString)
+
+    stage = new JFXApp3.PrimaryStage:
+      title = "My ScalaFX Spreadsheet"
+      resizable = false
+      scene = mainScene
 

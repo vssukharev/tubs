@@ -52,6 +52,11 @@ class Table:
         
 
   /**
+   * Simply converts the table into human-readable json format
+   */
+  override def toString: String = write(this, 2)
+
+  /**
    * Helper for setters. 
    * Parameter newContent is called only when there
    * is now cell under specified key and the new one
