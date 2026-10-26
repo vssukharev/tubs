@@ -12,15 +12,11 @@ object Main extends JFXApp3:
   override def start(): Unit =
     val filename = "test.txt"
 
-    println("Loading " + filename)
     val table = loader.load(filename) match
       case Success(v) => v
       case Failure(e) => 
         error(e.getMessage)
         Table()
-
-    println("Resulting table:")
-    println(table.toString)
 
     stage = new JFXApp3.PrimaryStage:
       title = "tubs - Spreadsheet Editor"
