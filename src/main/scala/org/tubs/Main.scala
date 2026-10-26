@@ -10,13 +10,15 @@ import org.tubs.table.Table
 object Main extends JFXApp3:
 
   override def start(): Unit =
-    val filename = "test.txt"
+    val args = parameters.raw
+    val filename = if args.length == 0 then "Empty Table" else args(0)
 
-    val table = loader.load(filename) match
-      case Success(v) => v
-      case Failure(e) => 
-        error(e.getMessage)
-        Table()
+    val table = if args.length == 0 then Table() else
+      loader.load(filename) match
+        case Success(v) => v
+        case Failure(e) => 
+          error(e.getMessage)
+          Table()
 
     stage = new JFXApp3.PrimaryStage:
       title = "tubs - Spreadsheet Editor"

@@ -90,25 +90,29 @@ object View:
   def toHex(c: Color): String =
     f"#${(c.red * 255).toInt}%02x${(c.green * 255).toInt}%02x${(c.blue * 255).toInt}%02x"
 
+  /**
+   * Changes the table and sets current name
+   */
+  def changeTable(t: Table, name: String): Unit =
+    selectedKey.value = CellKey(1, 1)
+    currentTable.value = t
+    currentFileName.value = name
 
   /**
    * Attaches event handlers for toolbar buttons, keyboard navigation, color pickers, and zoom controls.
    */
   def setupEventHandlers(): Unit =
     // File manipulation buttons
-    // Buttons.open.onAction = _ =>
-    //   val chooser = new FileChooser:
-    //     title = "Open Table File"
-    //   val file = chooser.showOpenDialog(null)
-    //   if file != null then
-    //     loader.load(file.getAbsolutePath) match
-    //       case Success(t) =>
-    //         currentTable.value = t
-    //         currentFileName.value = file.getName
-    //         buildGrid()
-    //         selectCell(CellKey(1, 1))
-    //       case Failure(err) =>
-    //         error(s"Failed to open file: ${err.getMessage}")
+    Buttons.open.onAction = _ =>
+      val chooser = new FileChooser:
+        title = "Open Table File"
+      val file = chooser.showOpenDialog(null)
+      if file != null then
+        loader.load(file.getAbsolutePath) match
+          case Success(t) =>
+            changeTable(t, file.getName)
+          case Failure(err) =>
+            error(s"Failed to open file: ${err.getMessage}")
 
     Buttons.save.onAction = _ =>
       loader.save(currentTable.value, currentFileName.value) match
@@ -287,8 +291,7 @@ object View:
    */
   def createScene(table: Table, filename: String): Scene =
     setupEventHandlers()
-    currentTable.value = table
-    currentFileName.value = filename
+    changeTable(table, filename)
     initialized = true
 
     val topContainer = new VBox:
