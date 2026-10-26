@@ -84,7 +84,7 @@ class TableView(table: Table):
     appendRows(Defaults.DefaultRows)
  
   /**
-   * ...
+   * Append n rows and initializes the cells in there
    */
   private def appendRows(n: Int): Unit =
     val startRow = renderedRows + 1
@@ -103,14 +103,14 @@ class TableView(table: Table):
       for j <- 1 to renderedCols do 
         val key = CellKey(j, i)
         val cellView = CellView(key)
-        cellView.update()
         Sections.grid.add(cellView.container, j, i)
+        cellView.update()
         rowBuf += cellView
 
       cells += (0 -> rowBuf)
   
   /**
-   * ...
+   * Appends n columns and initializes the cells
    */
   private def appendColumns(n: Int): Unit =
     val startCol = renderedCols + 1
@@ -131,8 +131,8 @@ class TableView(table: Table):
       for j <- startCol to endCol do
         val key = CellKey(j, i)
         val cellView = CellView(key)
-        cellView.update()
         Sections.grid.add(cellView.container, j, i)
+        cellView.update()
         rowBuf += cellView
 
 

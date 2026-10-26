@@ -55,14 +55,22 @@ private def showPopup(alertType: Alert.AlertType, titleText: String, message: St
 object View:
   import Sections.*
 
+  /**
+   * This flag must be a guard from null dereferencing
+   * of tableView or currentTable. Unfortunately, such
+   * initial state is the most appropriately implemented
+   * using null object - nothing to do here.
+   */
   var initialized = false
 
-  // --- Reactive UI state ---
+  /**
+   * Reative UI state
+   */
   val selectedKey = ObjectProperty[CellKey](CellKey(1, 1))
   val currentFileName = StringProperty("File name")
-  val currentTable = ObjectProperty[Table](Table())
   val zoomScale = DoubleProperty(1.0)
-  var tableView = TableView(currentTable.value)
+  val currentTable = ObjectProperty[Table](Table())
+  var tableView: TableView = null
 
   /**
    * Converts 1-based column ID into letter representations (1 -> A, 26 -> Z, 27 -> AA).
@@ -123,7 +131,7 @@ object View:
       info("Remote saving functionality is coming soon.")
 
     // View and current table sync
-    currentTable.onChange { (_, _, _) => if initialized then tableView = TableView(currentTable.value) }
+    currentTable.onChange { (_, _, _) => tableView = TableView(currentTable.value) }
 
     // Key selection synchronization
     selectedKey.onChange {
@@ -249,10 +257,10 @@ object View:
    * Assembles and returns the main application Scene.
    */
   def createScene(table: Table, filename: String): Scene =
+    setupEventHandlers()
     currentTable.value = table
     currentFileName.value = filename
-
-    setupEventHandlers()
+    initialized = true
 
     val topContainer = new VBox:
       spacing = 5
