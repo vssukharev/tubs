@@ -5,9 +5,10 @@ import scala.collection.mutable.{TreeMap, ArrayBuffer}
 import scala.math.Ordering
 import java.io.OutputStream
 import upickle.default.*
+import scalafx.scene.paint.Color
 
 import org.tubs.executor.{CellContent, ExprValue, FormulaParser}
-import org.tubs.utils.{Color, Todo}
+import org.tubs.utils.Todo
 
 /**
  * Table contains all semantic information about 
@@ -41,14 +42,32 @@ class Table:
   def getCell(key: CellKey): Option[Cell] = cells.get(key)
 
   /**
-   * Retrieves a value under specified key.
-   * If there is no cell under such key, returns
-   * empty VString.
+   * Retrieves a formula for the cell under specified key.
+   * If there is no cell under such key, returns empty string.
    */
-  def get(key: CellKey): ExprValue =
+  def getFormula(key: CellKey): String =
+    getCell(key).map(_.content.formula).getOrElse("")
+
+  /**
+   * Retrieves appearance properties for the cell under specified key.
+   * If there is no cell under such key, returns the default CellAppearance.
+   */
+  def getAppearance(key: CellKey): CellAppearance =
+    getCell(key).map(_.appearance).getOrElse(CellAppearance())
+
+  /**
+   * Retrieves a value under specified key along with the list of
+   * dependent cells that need to be updated.
+   * If there is no cell under such key, returns empty VString and an empty list.
+   */
+  def getValue(key: CellKey): (ExprValue, List[CellKey]) =
     getCell(key) match
-      case Some(res) => res.content.value(using this)
-      case None      => ExprValue.VString("")
+      case Some(res) =>
+        val v = res.content.value(using this)
+        val deps = res.content.lastResetDependents
+        (v, deps)
+      case None =>
+        (ExprValue.VString(""), Nil)
         
 
   /**
@@ -59,7 +78,7 @@ class Table:
   /**
    * Helper for setters. 
    * Parameter newContent is called only when there
-   * is now cell under specified key and the new one
+   * is no cell under specified key and the new one
    * must be constructed.
    */
   private inline def setContent(key: CellKey, formula: String, inline newContent: () => CellContent): Cell = cells.updateWith(key) {
@@ -127,7 +146,16 @@ case class Cell(content: CellContent, var appearance: CellAppearance = CellAppea
 /**
  * Properties of cell, impacting only the appearance
  */
-case class CellAppearance(fgColor: Color = Color(), bgColor: Color = Color()) derives ReadWriter
+case class CellAppearance(fgColor: Color = Color.rgb(32, 39, 52), bgColor: Color = Color.White) derives ReadWriter
+
+/**
+ * Serializer for ScalaFX Color
+ */
+given ReadWriter[Color] = 
+  readwriter[Long].bimap(
+    color => (((color.red * 255).toInt & 0xff).toLong << 24) | (((color.green * 255).toInt & 0xff).toLong << 16) | (((color.blue * 255).toInt & 0xff).toLong << 8) | ((color.opacity * 255).toInt & 0xff).toLong,
+    v     => Color.rgb(((v >> 24) & 0xff).toInt, ((v >> 16) & 0xff).toInt, ((v >> 8) & 0xff).toInt, ((v & 0xff).toDouble / 255.0))
+  )
 
 /**
  * Row and Column both contain all mutable properties

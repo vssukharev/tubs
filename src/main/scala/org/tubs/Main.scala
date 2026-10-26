@@ -12,7 +12,7 @@ object Main extends JFXApp3:
   override def start(): Unit =
     val filename = "test.txt"
 
-    info("Loading " + filename)
+    println("Loading " + filename)
     val table = loader.load(filename) match
       case Success(v) => v
       case Failure(e) => 
@@ -23,7 +23,7 @@ object Main extends JFXApp3:
     println(table.toString)
 
     stage = new JFXApp3.PrimaryStage:
-      title = "My ScalaFX Spreadsheet"
-      resizable = false
-      scene = mainScene
+      title = "tubs - Spreadsheet Editor"
+      resizable = true
+      scene = View.createScene(table, filename)
 

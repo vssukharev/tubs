@@ -7,7 +7,123 @@
           "rowId": 1
         },
         "formula": "Hello!",
-        "value": null
+        "value": {
+          "$type": "VString",
+          "v": "Hello!"
+        }
+      },
+      "appearance": {
+        "fgColor": 437918463
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 1,
+          "rowId": 4
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        }
+      },
+      "appearance": {
+        "bgColor": 1293569535
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 2,
+          "rowId": 1
+        },
+        "formula": "=7 ^ 2",
+        "value": {
+          "$type": "VFloating",
+          "v": 49
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 1
+        },
+        "formula": "=10",
+        "value": {
+          "$type": "VInteger",
+          "v": 10
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 2
+        },
+        "formula": "asdasd",
+        "value": {
+          "$type": "VString",
+          "v": "asdasd"
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 3
+        },
+        "formula": "asdas",
+        "value": {
+          "$type": "VString",
+          "v": "asdas"
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 5
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 4,
+          "rowId": 1
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        }
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 5,
+          "rowId": 6
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        }
+      },
+      "appearance": {
+        "bgColor": 3614601983
       }
     }
   ],

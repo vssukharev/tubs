@@ -60,14 +60,22 @@ class CellContent(
       _vopt = Result(res)
       res
 
+  private var _lastResetDependents = List[CellKey]()
+
   /**
-   * Updates the formula and rebuilds AST
+   * Retrieves the list of dependent cell keys affected by the last reset.
    */
-  def refresh(newFormula: String)(using context: Table): Unit =
+  def lastResetDependents: List[CellKey] = _lastResetDependents
+
+  /**
+   * Updates the formula, rebuilds AST, and resets value, returning affected dependent cells.
+   */
+  def refresh(newFormula: String)(using context: Table): List[CellKey] =
     removeDependencies()
-    resetValue()
+    _lastResetDependents = resetValue()
     _formula = newFormula
     _ast = CellAST(key, _formula)
+    _lastResetDependents
 
   /**
    * Traverses dependencies and deletes instance of this cell 
@@ -80,13 +88,22 @@ class CellContent(
 
   /**
    * Set cell's value to empty, recursively resetting
-   * all of the dependent cells.
+   * all of the dependent cells and collecting affected keys.
    */
-  def resetValue()(using context: Table): Unit =
+  def resetValue()(using context: Table): List[CellKey] =
     if _vopt != ExprValueOpt.Empty then
       _vopt = ExprValueOpt.Empty
+      val affected = List.newBuilder[CellKey]
       for depKey <- _dependents do
-        context.getCell(depKey).foreach(_.content.resetValue())
+        affected += depKey
+        context.getCell(depKey).foreach { depCell =>
+          affected ++= depCell.content.resetValue()
+        }
+      val res = affected.result().distinct
+      _lastResetDependents = res
+      res
+    else
+      Nil
 
   /**
    * Sends a message to a user mentioning the current cell 

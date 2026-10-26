@@ -7,6 +7,7 @@ AI ASSISTED:
 1. Partially file [src/main/scala/org/tubs/executor/CellParser.scala]
 2. Helped with setting up Json (de)serializer
 3. Scala metaprogramming assistance
+4. Scalafx frontend
 
 ## All possible expressions with their precedence (from lowest to highest)
 1. for ... do ...  /  if ... then ... else ...
@@ -23,5 +24,9 @@ AI ASSISTED:
   3. cell references - B2, B\[i], \[j]2, \[i]\[j]
 
 ## TODO
+- Save dependents and dependencies of a cell into json
+- File chooser opening error
+- Remote google drive file access
+- File access from command line
 - Help page for user interface
 
