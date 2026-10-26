@@ -33,6 +33,32 @@ class CellView(val key: CellKey):
     refreshContent()
 
   /**
+   * Ensures the given cell key is scrolled into view within the ScrollPane.
+   * TODO: adjust it a bit
+   */
+  def makeVisible(): Unit =
+    val targetY = (key.rowId - 1) * Defaults.CellHeight
+    val targetX = (key.colId - 1) * Defaults.CellWidth
+    val vpHeight = Sections.scrollPane.viewportBounds.value.getHeight
+    val vpWidth = Sections.scrollPane.viewportBounds.value.getWidth
+    val contentH = View.tableView.renderedRows * Defaults.CellHeight
+    val contentW = View.tableView.renderedCols * Defaults.CellWidth
+
+    if contentH > vpHeight && vpHeight > 0 then
+      val curY = Sections.scrollPane.vvalue.value * (contentH - vpHeight)
+      if targetY < curY then
+        Sections.scrollPane.vvalue = (targetY / (contentH - vpHeight)).max(0.0).min(1.0)
+      else if targetY + Defaults.CellHeight > curY + vpHeight then
+        Sections.scrollPane.vvalue = ((targetY + Defaults.CellHeight - vpHeight) / (contentH - vpHeight)).max(0.0).min(1.0)
+
+    if contentW > vpWidth && vpWidth > 0 then
+      val curX = Sections.scrollPane.hvalue.value * (contentW - vpWidth)
+      if targetX < curX then
+        Sections.scrollPane.hvalue = (targetX / (contentW - vpWidth)).max(0.0).min(1.0)
+      else if targetX + Defaults.CellWidth > curX + vpWidth then
+        Sections.scrollPane.hvalue = ((targetX + Defaults.CellWidth - vpWidth) / (contentW - vpWidth)).max(0.0).min(1.0)
+
+  /**
    * Updates border, background, and text colors according to cell appearance and selection state.
    */
   def updateAppearance(): Unit =

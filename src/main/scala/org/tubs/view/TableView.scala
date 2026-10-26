@@ -86,7 +86,7 @@ class TableView(table: Table):
   /**
    * Append n rows and initializes the cells in there
    */
-  private def appendRows(n: Int): Unit =
+  def appendRows(n: Int): Unit =
     val startRow = renderedRows + 1
     val endRow = renderedRows + n
 
@@ -112,7 +112,7 @@ class TableView(table: Table):
   /**
    * Appends n columns and initializes the cells
    */
-  private def appendColumns(n: Int): Unit =
+  def appendColumns(n: Int): Unit =
     val startCol = renderedCols + 1
     val endCol = renderedCols + n
 

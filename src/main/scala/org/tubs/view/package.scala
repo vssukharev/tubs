@@ -90,6 +90,7 @@ object View:
   def toHex(c: Color): String =
     f"#${(c.red * 255).toInt}%02x${(c.green * 255).toInt}%02x${(c.blue * 255).toInt}%02x"
 
+
   /**
    * Attaches event handlers for toolbar buttons, keyboard navigation, color pickers, and zoom controls.
    */
@@ -140,7 +141,11 @@ object View:
         val newView = tableView.getCellView(newKey)
         oldView.update()
         newView.updateAppearance()
+        
+        // Check on visibility
+        newView.makeVisible()
 
+        // Sync headers
         tableView.updateHeaderHighlight(oldKey, newKey)
 
         // Sync formula editor section
@@ -154,6 +159,30 @@ object View:
         fgPicker.value = app.fgColor
         bgPicker.value = app.bgColor
     }
+
+    /**
+     * Checks current viewport scroll bounds and expands by PrelookupNum if nearing grid edges.
+     */
+    scrollPane.onScroll = _ =>
+      val vpHeight = scrollPane.viewportBounds.value.getHeight
+      val vpWidth = scrollPane.viewportBounds.value.getWidth
+      val contentHeight = tableView.renderedRows * Defaults.CellHeight
+      val contentWidth = tableView.renderedCols * Defaults.CellWidth
+
+      // Vertical check: expand rows if remaining unviewed rows <= PrelookupNum
+      if contentHeight > vpHeight && vpHeight > 0 then
+        val scrollY = scrollPane.vvalue.value * (contentHeight - vpHeight)
+        val lastVisibleRow = ((scrollY + vpHeight) / Defaults.CellHeight).toInt
+        if tableView.renderedRows - lastVisibleRow <= Defaults.PrelookupNum then
+          tableView.appendRows(Defaults.PrelookupNum)
+
+      // Horizontal check: expand cols if remaining unviewed cols <= PrelookupNum
+      if contentWidth > vpWidth && vpWidth > 0 then
+        val scrollX = scrollPane.hvalue.value * (contentWidth - vpWidth)
+        val lastVisibleCol = ((scrollX + vpWidth) / Defaults.CellWidth).toInt
+        if tableView.renderedCols - lastVisibleCol <= Defaults.PrelookupNum then
+          tableView.appendColumns(Defaults.PrelookupNum)
+
 
     // When the selection changed from content to something else
     selectionContent.focused.onChange { 
