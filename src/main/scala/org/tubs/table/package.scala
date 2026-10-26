@@ -1,7 +1,8 @@
 
 package org.tubs.table
 
-import scala.collection.mutable.{TreeMap, ArrayBuffer}
+import scala.collection.mutable
+import scala.collection.mutable.{TreeMap, ArrayBuffer, Set}
 import scala.math.Ordering
 import java.io.OutputStream
 import upickle.default.*
@@ -60,14 +61,14 @@ class Table:
    * dependent cells that need to be updated.
    * If there is no cell under such key, returns empty VString and an empty list.
    */
-  def getValue(key: CellKey): (ExprValue, List[CellKey]) =
+  def getValue(key: CellKey): (ExprValue, Iterable[CellKey]) =
     getCell(key) match
       case Some(res) =>
         val v = res.content.value(using this)
-        val deps = res.content.lastResetDependents
+        val deps = res.content.dependents
         (v, deps)
       case None =>
-        (ExprValue.VString(""), Nil)
+        (ExprValue.VString(""), mutable.Set.empty)
         
 
   /**

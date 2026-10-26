@@ -35,7 +35,9 @@ def warn(message: String): Unit = showPopup(Alert.AlertType.Warning, "Warning", 
 /**
  * Displays an error pop-up dialog.
  */
-def error(message: String): Unit = showPopup(Alert.AlertType.Error, "Error", message)
+def error(message: String): Unit = 
+  showPopup(Alert.AlertType.Error, "Error", message)
+  println("ERROR: " + message)
 
 /**
  * Helper to display a JavaFX Alert pop-up dialog on the UI thread.

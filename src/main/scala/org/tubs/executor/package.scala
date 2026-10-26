@@ -25,16 +25,16 @@ import org.tubs.view
  * type check.
  */
 class CellContent(
-  val key: CellKey,
+          val key: CellKey,
   private var _formula: String, 
-  private[executor] var _vopt: ExprValueOpt, 
+  private var _vopt: ExprValueOpt, 
+          val dependents: Set[CellKey] = Set.empty,
 ):
 
   import ExprValue.*
   import ExprValueOpt.*
 
   private var _ast          = CellAST(key, _formula)
-  private val _dependents   = Set[CellKey]()
   private val _dependencies = Set[CellKey]()
   private val _symbols      = Stack[(String, ExprValue)]()
 
@@ -60,26 +60,19 @@ class CellContent(
       _vopt = Result(res)
       res
 
-  private var _lastResetDependents = List[CellKey]()
-
-  /**
-   * Retrieves the list of dependent cell keys affected by the last reset.
-   */
-  def lastResetDependents: List[CellKey] = _lastResetDependents
-
   /**
    * Updates the formula, rebuilds AST, and resets value, returning affected dependent cells.
    */
   def refresh(newFormula: String)(using context: Table): List[CellKey] =
     removeDependencies()
-    _lastResetDependents = resetValue()
+    val res = resetValue()
     _formula = newFormula
     _ast = CellAST(key, _formula)
-    _lastResetDependents
+    res
 
   /**
    * Traverses dependencies and deletes instance of this cell 
-   * in their _dependents
+   * in their dependents
    */
   def removeDependencies()(using context: Table): Unit =
     for depKey <- _dependencies do
@@ -94,14 +87,12 @@ class CellContent(
     if _vopt != ExprValueOpt.Empty then
       _vopt = ExprValueOpt.Empty
       val affected = List.newBuilder[CellKey]
-      for depKey <- _dependents do
+      for depKey <- dependents do
         affected += depKey
         context.getCell(depKey).foreach { depCell =>
           affected ++= depCell.content.resetValue()
         }
-      val res = affected.result().distinct
-      _lastResetDependents = res
-      res
+      affected.result()
     else
       Nil
 
@@ -115,8 +106,8 @@ class CellContent(
   /**
    * Dependent cells manipulation methods
    */
-  def addDependent(depKey: CellKey): Unit    = _dependents += depKey
-  def removeDependent(depKey: CellKey): Unit = _dependents -= depKey
+  def addDependent(depKey: CellKey): Unit    = dependents += depKey
+  def removeDependent(depKey: CellKey): Unit = dependents -= depKey
 
   /**
    * Variables stack manipulation methods
@@ -144,18 +135,20 @@ object CellContent:
    * CellContent Representation in json: formula and optional value
    */
   given ReadWriter[CellContent] = readwriter[ujson.Value].bimap(
-    obj => ujson.Obj(
-      "key"     -> writeJs(obj.key),
-      "formula" -> obj.formula,
-      "value"   -> writeJs(obj.vopt.toOption)
+    content => ujson.Obj(
+      "key"        -> writeJs(content.key),
+      "formula"    -> content.formula,
+      "value"      -> writeJs(content.vopt.toOption),
+      "dependents" -> writeJs(content.dependents)
     ),
     json => 
-      val key     = read[CellKey](json("key"))
-      val formula = read[String](json("formula"))
-      val value   = read[Option[ExprValue]](json("value"))
+      val key        = read[CellKey](json("key"))
+      val formula    = read[String](json("formula"))
+      val value      = read[Option[ExprValue]](json("value"))
+      val dependents = read[Set[CellKey]](json("dependents"))
       value match
-        case Some(x) => CellContent(key, formula, x)
-        case None    => CellContent(key, formula)
+        case Some(x) => new CellContent(key, formula, ExprValueOpt.Result(x), dependents)
+        case None    => new CellContent(key, formula, ExprValueOpt.Empty, dependents)
   )
 
 /**

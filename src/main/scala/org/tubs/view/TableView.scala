@@ -51,8 +51,12 @@ class TableView(table: Table):
    */
   def setCellFormula(key: CellKey, formula: String): Unit =
     table.set(key, formula)
-    val (_, dependent) = table.getValue(key)
-    for depKey <- dependent do this.getCellView(depKey).update()
+    def traverseDeps(key: CellKey): Unit =
+      val (_, dependent) = table.getValue(key)
+      for depKey <- dependent do 
+        this.getCellView(depKey).refreshContent()
+        traverseDeps(depKey)
+    traverseDeps(key)
 
   /**
    * Updates row and column header styles when selection changes

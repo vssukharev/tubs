@@ -16,8 +16,8 @@ object Main extends JFXApp3:
     val table = if args.length == 0 then Table() else
       loader.load(filename) match
         case Success(v) => v
-        case Failure(e) => 
-          error(e.getMessage)
+        case Failure(e) =>
+          error(s"Could not open a file $filename. Reason: ${e.getMessage}")
           Table()
 
     stage = new JFXApp3.PrimaryStage:
