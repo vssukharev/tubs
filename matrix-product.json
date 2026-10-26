@@ -1,0 +1,385 @@
+{
+  "cells": [
+    {
+      "content": {
+        "key": {
+          "colId": 1,
+          "rowId": 1
+        },
+        "formula": "n",
+        "value": {
+          "$type": "VString",
+          "v": "n"
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 1,
+          "rowId": 2
+        },
+        "formula": "2",
+        "value": {
+          "$type": "VString",
+          "v": "2"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          },
+          {
+            "colId": 7,
+            "rowId": 2
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 2,
+          "rowId": 1
+        },
+        "formula": "Matrix 1",
+        "value": {
+          "$type": "VString",
+          "v": "Matrix 1"
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 2,
+          "rowId": 2
+        },
+        "formula": "1",
+        "value": {
+          "$type": "VString",
+          "v": "1"
+        },
+        "dependents": [
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 7,
+            "rowId": 2
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 2,
+          "rowId": 3
+        },
+        "formula": "1",
+        "value": {
+          "$type": "VString",
+          "v": "1"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 1
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 2
+        },
+        "formula": "0",
+        "value": {
+          "$type": "VString",
+          "v": "0"
+        },
+        "dependents": [
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 7,
+            "rowId": 2
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 3,
+          "rowId": 3
+        },
+        "formula": "0",
+        "value": {
+          "$type": "VString",
+          "v": "0"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 4,
+          "rowId": 1
+        },
+        "formula": "Matrix 2",
+        "value": {
+          "$type": "VString",
+          "v": "Matrix 2"
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 4,
+          "rowId": 2
+        },
+        "formula": "0",
+        "value": {
+          "$type": "VString",
+          "v": "0"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 4,
+          "rowId": 3
+        },
+        "formula": "1",
+        "value": {
+          "$type": "VString",
+          "v": "1"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 5,
+          "rowId": 2
+        },
+        "formula": "1",
+        "value": {
+          "$type": "VString",
+          "v": "1"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          },
+          {
+            "colId": 7,
+            "rowId": 2
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 5,
+          "rowId": 3
+        },
+        "formula": "0",
+        "value": {
+          "$type": "VString",
+          "v": "0"
+        },
+        "dependents": [
+          {
+            "colId": 7,
+            "rowId": 3
+          },
+          {
+            "colId": 6,
+            "rowId": 2
+          },
+          {
+            "colId": 6,
+            "rowId": 3
+          },
+          {
+            "colId": 7,
+            "rowId": 2
+          }
+        ]
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 6,
+          "rowId": 1
+        },
+        "formula": "M1 * M2",
+        "value": {
+          "$type": "VString",
+          "v": "M1 * M2"
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 6,
+          "rowId": 2
+        },
+        "formula": "= for i, acc=0 in 1..A2 do acc + [i+1]2 * D[i+1]",
+        "value": {
+          "$type": "VFloating",
+          "v": 0
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 6,
+          "rowId": 3
+        },
+        "formula": "= for i, acc=0 in 1..A2 do acc + [i+1]3 * D[i+1]",
+        "value": {
+          "$type": "VFloating",
+          "v": 0
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 7,
+          "rowId": 2
+        },
+        "formula": "= for i, acc=0 in 1..A2 do acc + [i+1]2 * E[i+1]",
+        "value": {
+          "$type": "VFloating",
+          "v": 1
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 7,
+          "rowId": 3
+        },
+        "formula": "= for i, acc=0 in 1..A2 do acc + [i+1]3 * E[i+1]",
+        "value": {
+          "$type": "VFloating",
+          "v": 1
+        },
+        "dependents": []
+      }
+    },
+    {
+      "content": {
+        "key": {
+          "colId": 7,
+          "rowId": 4
+        },
+        "formula": "",
+        "value": {
+          "$type": "VString",
+          "v": ""
+        },
+        "dependents": []
+      }
+    }
+  ],
+  "rows": [],
+  "cols": []
+}
