@@ -73,8 +73,9 @@ class TableView(table: Table):
   def createCells(): Unit = 
     // Top-left corner cell
     val corner = new Label:
-      prefWidth = Defaults.RowHeaderWidth
-      prefHeight = Defaults.ColHeaderHeight
+      prefWidth = Defaults.CellWidth
+      prefHeight = Defaults.CellHeight
+      alignment = Pos.Center
       style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px;"
 
     Sections.grid.add(corner, 0, 0)
@@ -88,8 +89,6 @@ class TableView(table: Table):
   private def appendRows(n: Int): Unit =
     val startRow = renderedRows + 1
     val endRow = renderedRows + n
-
-    println(s"appending rows $startRow -> $endRow")
 
     cells.sizeHint(endRow)
     rowHeaders.sizeHint(endRow)
@@ -116,8 +115,6 @@ class TableView(table: Table):
   private def appendColumns(n: Int): Unit =
     val startCol = renderedCols + 1
     val endCol = renderedCols + n
-
-    println(s"appending cols $startCol -> $endCol")
 
     colHeaders.sizeHint(endCol)
 

@@ -25,8 +25,6 @@ object Defaults:
   val CellHeight: Double = 26.0
   val MinCellWidth: Double = 40.0
   val MinCellHeight: Double = 13.0
-  val RowHeaderWidth: Double = 40.0
-  val ColHeaderHeight: Double = 24.0
 
   val MinZoomScale: Double = 0.5
   val MaxZoomScale: Double = 2.0
