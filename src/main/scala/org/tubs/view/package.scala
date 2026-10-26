@@ -16,6 +16,7 @@ import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.stage.FileChooser
 import scalafx.beans.property.{ObjectProperty, StringProperty, IntegerProperty, DoubleProperty}
 import scalafx.beans.binding.Bindings
+import scalafx.beans.binding.Bindings.*
 
 import org.tubs.table.*
 import org.tubs.executor.*
@@ -54,16 +55,14 @@ private def showPopup(alertType: Alert.AlertType, titleText: String, message: St
 object View:
   import Sections.*
 
+  var initialized = false
+
   // --- Reactive UI state ---
   val selectedKey = ObjectProperty[CellKey](CellKey(1, 1))
   val currentFileName = StringProperty("File name")
   val currentTable = ObjectProperty[Table](Table())
   val zoomScale = DoubleProperty(1.0)
-
-  var tableView = TableView()
-
-  // Sync table view with current table
-  currentTable.onChange { (_, _, _) => tableView = TableView() }
+  var tableView = TableView(currentTable.value)
 
   /**
    * Converts 1-based column ID into letter representations (1 -> A, 26 -> Z, 27 -> AA).
@@ -122,6 +121,9 @@ object View:
 
     Buttons.saveAsRemotely.onAction = _ =>
       info("Remote saving functionality is coming soon.")
+
+    // View and current table sync
+    currentTable.onChange { (_, _, _) => if initialized then tableView = TableView(currentTable.value) }
 
     // Key selection synchronization
     selectedKey.onChange {
@@ -246,7 +248,7 @@ object View:
   /**
    * Assembles and returns the main application Scene.
    */
-  def createScene(table: Table = Table(), filename: String = "test.txt"): Scene =
+  def createScene(table: Table, filename: String): Scene =
     currentTable.value = table
     currentFileName.value = filename
 
@@ -290,8 +292,4 @@ object View:
             bottom = footer
         )
 
-  /**
-   * Scene getter for default state.
-   */
-  def mainScene: Scene = createScene(currentTable.value, currentFileName.value)
 

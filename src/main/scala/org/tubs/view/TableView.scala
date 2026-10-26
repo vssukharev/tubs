@@ -9,7 +9,7 @@ import scalafx.geometry.Pos
 import org.tubs.table.{Table, CellKey}
 import org.tubs.utils.Todo
 
-class TableView:
+class TableView(table: Table):
   /**
    * The rows are not fully rendered unless it is needed.
    * It is reached via Deque. And the column index of the first
@@ -50,7 +50,6 @@ class TableView:
    * only the edited and dependent cells.
    */
   def setCellFormula(key: CellKey, formula: String): Unit =
-    val table = View.currentTable.value
     table.set(key, formula)
     val (_, dependent) = table.getValue(key)
     for depKey <- dependent do this.getCellView(depKey).update()
