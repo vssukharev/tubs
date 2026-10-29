@@ -6,6 +6,7 @@ import scalafx.application.JFXApp3
 
 import org.tubs.view.*
 import org.tubs.table.Table
+import org.tubs.loader.{GoogleLoader, Loader}
 
 object Main extends JFXApp3:
 
@@ -14,8 +15,8 @@ object Main extends JFXApp3:
     val filename = if args.length == 0 then "Empty Table" else args(0)
 
     val table = if args.length == 0 then Table() else
-      loader.load(filename) match
-        case Success(v) => v
+      Loader.loadLocal(filename) match
+        case Success(v -> _) => v
         case Failure(e) =>
           error(s"Could not open a file $filename. Reason: ${e.getMessage}")
           Table()
@@ -24,4 +25,5 @@ object Main extends JFXApp3:
       title = "tubs - Spreadsheet Editor"
       resizable = true
       scene = View.createScene(table, filename)
+
 

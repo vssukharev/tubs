@@ -20,7 +20,7 @@ import scalafx.beans.binding.Bindings.*
 
 import org.tubs.table.*
 import org.tubs.executor.*
-import org.tubs.loader
+import org.tubs.loader.{Loader, LocationKind}
 
 /**
  * Displays an informational pop-up dialog.
@@ -69,10 +69,15 @@ object View:
    * Reative UI state
    */
   val selectedKey = ObjectProperty[CellKey](CellKey(1, 1))
-  val currentFileName = StringProperty("File name")
   val zoomScale = DoubleProperty(1.0)
-  val currentTable = ObjectProperty[Table](Table())
   var tableView: TableView = null
+
+  /**
+   * Inner application state
+   */
+  val currentFileName = StringProperty("File name")
+  val currentTable = ObjectProperty[Table](Table())
+  val currentLocationKind = ObjectProperty[LocationKind](LocationKind.Local)
 
   /**
    * Converts 1-based column ID into letter representations (1 -> A, 26 -> Z, 27 -> AA).
@@ -95,47 +100,49 @@ object View:
   /**
    * Changes the table and sets current name
    */
-  def changeTable(t: Table, name: String): Unit =
+  def switchTable(t: Table, name: String, locKind: LocationKind): Unit =
     selectedKey.value = CellKey(1, 1)
     currentTable.value = t
     currentFileName.value = name
+    currentLocationKind.value = locKind
 
   /**
    * Attaches event handlers for toolbar buttons, keyboard navigation, color pickers, and zoom controls.
    */
   def setupEventHandlers(): Unit =
-    // File manipulation buttons
-    Buttons.open.onAction = _ =>
-      val chooser = new FileChooser:
-        title = "Open Table File"
-      val file = chooser.showOpenDialog(null)
-      if file != null then
-        loader.load(file.getAbsolutePath) match
-          case Success(t) =>
-            changeTable(t, file.getName)
-          case Failure(err) =>
-            error(s"Failed to open file: ${err.getMessage}")
 
-    Buttons.save.onAction = _ =>
-      loader.save(currentTable.value, currentFileName.value) match
-        case Success(_) => info(s"Saved to ${currentFileName.value}")
-        case Failure(err) => error(s"Failed to save file: ${err.getMessage}")
+    Buttons.openLocally.onAction = _ =>
+      Loader.loadLocal() match
+        case Success(t -> name) => switchTable(t, name, LocationKind.Local)
+        case Failure(err)       => error(s"Failed to open file: ${err.getMessage}")
+
+    Buttons.openRemotely.onAction = _ =>
+      Loader.loadRemote() match
+        case Success(t -> name) => switchTable(t, name, LocationKind.Remote)
+        case Failure(err)       => error(s"Failed to open file in Google Drive: ${err.getMessage}")
+
+    Buttons.save.onAction = _ => 
+      Loader.save(currentTable.value, currentLocationKind.value, currentFileName.value) match
+        case Success(filename) => info(s"Saved to ${currentFileName.value}")
+        case Failure(err)      => error(s"Failed to save file: ${err.getMessage}")
 
     Buttons.saveAsLocally.onAction = _ =>
-      val chooser = new FileChooser:
-        title = "Save Table As"
-        initialFileName = currentFileName.value
-      val file = chooser.showSaveDialog(null)
-      if file != null then
-        loader.save(currentTable.value, file.getAbsolutePath) match
-          case Success(_) =>
-            currentFileName.value = file.getName
-            info(s"Saved as ${file.getAbsolutePath}")
-          case Failure(err) =>
-            error(s"Failed to save file: ${err.getMessage}")
+      Loader.saveLocal(currentTable.value) match
+        case Success(filename) => 
+          currentFileName.value = filename
+          currentLocationKind.value = LocationKind.Local
+          info(s"Saved to ${currentFileName.value}")
+        case Failure(err) => 
+          error(s"Failed to save file: ${err.getMessage}")
 
     Buttons.saveAsRemotely.onAction = _ =>
-      info("Remote saving functionality is coming soon.")
+      Loader.saveRemote(currentTable.value) match
+        case Success(filename) => 
+          currentFileName.value = filename
+          currentLocationKind.value = LocationKind.Remote
+          info(s"Saved in Google Drive to ${currentFileName.value}")
+        case Failure(err) => 
+          error(s"Failed to save file in Google Drive: ${err.getMessage}")
 
     // View and current table sync
     currentTable.onChange { (_, _, _) => tableView = TableView(currentTable.value) }
@@ -293,7 +300,7 @@ object View:
    */
   def createScene(table: Table, filename: String): Scene =
     setupEventHandlers()
-    changeTable(table, filename)
+    switchTable(table, filename, LocationKind.Local)
     initialized = true
 
     val topContainer = new VBox:

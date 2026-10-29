@@ -31,7 +31,8 @@ object Sections:
   // 2. Action buttons + Help
   val fileManip = new ToolBar:
     items = Seq(
-      Buttons.open,
+      Buttons.openLocally,
+      Buttons.openRemotely,
       Buttons.save,
       Buttons.saveAsLocally,
       Buttons.saveAsRemotely,

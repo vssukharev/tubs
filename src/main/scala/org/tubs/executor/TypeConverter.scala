@@ -8,7 +8,6 @@ object TypeConverter:
   import ExprType.*
   import TypeConversion.*
     
-  type ExprValueThunk = () => ExprValue
   type Converter = PartialFunction[ExprValue, ExprValue]
 
   /**
