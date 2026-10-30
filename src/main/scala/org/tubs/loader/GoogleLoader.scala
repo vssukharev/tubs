@@ -4,7 +4,7 @@ package org.tubs.loader
 import scala.util.{Using, Try, Success, Failure}
 import upickle.default.*
 import scala.io.Source
-import java.io.{BufferedWriter, FileWriter, InputStreamReader, FileInputStream, File}
+import java.io.{BufferedWriter, FileWriter, InputStreamReader, FileInputStream, File, FileNotFoundException}
 import java.util.Collections
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
@@ -20,6 +20,7 @@ import scala.jdk.CollectionConverters.*
 import com.google.api.services.drive.model.{File as GFile}
 import com.google.api.client.http.ByteArrayContent
 import java.nio.charset.StandardCharsets
+import scalafx.scene.control.*
 
 import org.tubs.table.Table
 
@@ -27,6 +28,7 @@ object GoogleLoader:
   val dataStore    = ".authdata"
   val secretsPath  = "src/main/resources/client_secrets.json"
   val appData      = "appDataFolder"
+  val defaultFile  = "tubs-table.json"
   val root         = Collections.singletonList(appData)
   val jsonFactory  = GsonFactory.getDefaultInstance()
   val scopes       = Collections.singletonList(DriveScopes.DRIVE_APPDATA)
@@ -34,10 +36,17 @@ object GoogleLoader:
   val service      = getService()
 
   /**
-   * Chooses a path in google drive. 
-   * TODO: Making a stub here for now.
+   * Chooses a path in google drive. Returns empty
+   * string if no file chosen.
    */
-  def choose(): String = "tubs-table.json"
+  def choose(): String = 
+    val dialog = new TextInputDialog(defaultFile):
+      title = "tubs"
+      headerText = "Google Drive file chooser"
+      contentText = "Enter file to be chosen:"
+    dialog.showAndWait() match
+      case Some(res) => res
+      case None      => throw new FileNotFoundException("Please select enter file")
 
   /**
    * Returns a resulting serialized Table.

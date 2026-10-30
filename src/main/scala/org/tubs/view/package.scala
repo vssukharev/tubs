@@ -123,8 +123,8 @@ object View:
 
     Buttons.save.onAction = _ => 
       Loader.save(currentTable.value, currentLocationKind.value, currentFileName.value) match
-        case Success(filename) => info(s"Saved to ${currentFileName.value}")
-        case Failure(err)      => error(s"Failed to save file: ${err.getMessage}")
+        case Success(filename) => info(s"Saved to ${currentFileName.value} ${currentLocationKind.value}")
+        case Failure(err)      => error(s"Failed to save file ${currentLocationKind.value}: ${err.getMessage}")
 
     Buttons.saveAsLocally.onAction = _ =>
       Loader.saveLocal(currentTable.value) match

@@ -13,6 +13,9 @@ import org.tubs.table.Table
 enum LocationKind:
   case Local
   case Remote
+  override def toString: String = this match
+    case Local => "locally"
+    case Remote => "remotely"
 
 object Loader:  
 
@@ -61,7 +64,7 @@ object Loader:
     }
 
   def loadRemote(path: String = ""): Try[(Table, String)] =
-    try 
+    try
       val resPath = if path == "" then GoogleLoader.choose() else path
       val s = GoogleLoader.load(resPath)
       val res = read[Table](s)
