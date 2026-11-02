@@ -16,6 +16,8 @@ import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.stage.FileChooser
 import scalafx.beans.property.{ObjectProperty, StringProperty, IntegerProperty, DoubleProperty}
 
+import org.tubs.settings.Settings
+
 object Sections:
   // 1. File name (Fixed Box)
   val fileNameLabel = new Label("File name"):
@@ -25,7 +27,7 @@ object Sections:
   val fileName = new HBox:
     alignment = Pos.Center
     padding = Insets(5, 15, 5, 15)
-    style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 1px; -fx-background-radius: 4px; -fx-border-radius: 4px;"
+    style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 1px; -fx-background-radius: 4px; -fx-border-radius: 4px;"
     children = Seq(fileNameLabel)
 
   // 2. Action buttons + Help
@@ -41,11 +43,11 @@ object Sections:
     )
 
   // 3. Style editor (Foreground and background color pickers)
-  val fgPicker = new ColorPicker(Defaults.DefaultFgColor):
+  val fgPicker = new ColorPicker(Settings.defaultFgColor.value):
     style = "-fx-color-label-visible: false;"
     prefWidth = 45
 
-  val bgPicker = new ColorPicker(Defaults.DefaultBgColor):
+  val bgPicker = new ColorPicker(Settings.defaultBgColor.value):
     style = "-fx-color-label-visible: false;"
     prefWidth = 45
 
@@ -63,7 +65,7 @@ object Sections:
     alignment = Pos.Center
     minWidth = 65
     prefHeight = 28
-    style = s"-fx-background-color: ${Defaults.SelectionPillBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-radius: 14px; -fx-background-radius: 14px; -fx-font-weight: bold; -fx-text-fill: #495057; -fx-font-size: 12px;"
+    style = s"-fx-background-color: ${Settings.selectionPillBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-radius: 14px; -fx-background-radius: 14px; -fx-font-weight: bold; -fx-text-fill: #495057; -fx-font-size: 12px;"
 
   val selectionContent = new TextArea:
     promptText = "Formula or text (e.g. =A1 + B2)"
@@ -88,7 +90,7 @@ object Sections:
 
   // 5. Scroll pane and inner grid sections
   val grid = new GridPane:
-    style = s"-fx-background-color: ${Defaults.GridBgColor};"
+    style = s"-fx-background-color: ${Settings.gridBgColor.value};"
 
   val scrollPane = new ScrollPane:
     content = grid

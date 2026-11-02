@@ -8,6 +8,7 @@ import scalafx.geometry.{Insets, Pos}
 
 import org.tubs.executor.ExprValue
 import org.tubs.table.CellKey
+import org.tubs.settings.Settings
 
 class CellView(val key: CellKey):
   val label = new Label:
@@ -18,10 +19,10 @@ class CellView(val key: CellKey):
     style = "-fx-font-size: 12px;"
 
   val container = new StackPane:
-    prefWidth = Defaults.CellWidth
-    prefHeight = Defaults.CellHeight
-    minWidth = Defaults.MinCellWidth
-    minHeight = Defaults.MinCellHeight
+    prefWidth = Settings.cellWidth.value
+    prefHeight = Settings.cellHeight.value
+    minWidth = Settings.minCellWidth.value
+    minHeight = Settings.minCellHeight.value
     alignment = Pos.CenterLeft
     children = Seq(label)
 
@@ -37,26 +38,26 @@ class CellView(val key: CellKey):
    * TODO: adjust it a bit
    */
   def makeVisible(): Unit =
-    val targetY = (key.rowId - 1) * Defaults.CellHeight
-    val targetX = (key.colId - 1) * Defaults.CellWidth
+    val targetY = (key.rowId - 1) * Settings.cellHeight.value
+    val targetX = (key.colId - 1) * Settings.cellWidth.value
     val vpHeight = Sections.scrollPane.viewportBounds.value.getHeight
     val vpWidth = Sections.scrollPane.viewportBounds.value.getWidth
-    val contentH = View.tableView.renderedRows * Defaults.CellHeight
-    val contentW = View.tableView.renderedCols * Defaults.CellWidth
+    val contentH = View.tableView.renderedRows * Settings.cellHeight.value
+    val contentW = View.tableView.renderedCols * Settings.cellWidth.value
 
     if contentH > vpHeight && vpHeight > 0 then
       val curY = Sections.scrollPane.vvalue.value * (contentH - vpHeight)
       if targetY < curY then
         Sections.scrollPane.vvalue = (targetY / (contentH - vpHeight)).max(0.0).min(1.0)
-      else if targetY + Defaults.CellHeight > curY + vpHeight then
-        Sections.scrollPane.vvalue = ((targetY + Defaults.CellHeight - vpHeight) / (contentH - vpHeight)).max(0.0).min(1.0)
+      else if targetY + Settings.cellHeight.value > curY + vpHeight then
+        Sections.scrollPane.vvalue = ((targetY + Settings.cellHeight.value - vpHeight) / (contentH - vpHeight)).max(0.0).min(1.0)
 
     if contentW > vpWidth && vpWidth > 0 then
       val curX = Sections.scrollPane.hvalue.value * (contentW - vpWidth)
       if targetX < curX then
         Sections.scrollPane.hvalue = (targetX / (contentW - vpWidth)).max(0.0).min(1.0)
-      else if targetX + Defaults.CellWidth > curX + vpWidth then
-        Sections.scrollPane.hvalue = ((targetX + Defaults.CellWidth - vpWidth) / (contentW - vpWidth)).max(0.0).min(1.0)
+      else if targetX + Settings.cellWidth.value > curX + vpWidth then
+        Sections.scrollPane.hvalue = ((targetX + Settings.cellWidth.value - vpWidth) / (contentW - vpWidth)).max(0.0).min(1.0)
 
   /**
    * Updates border, background, and text colors according to cell appearance and selection state.
@@ -69,7 +70,7 @@ class CellView(val key: CellKey):
     val isSel = View.selectedKey.value == key
 
     val borderWidth = if isSel then "2.5px" else "0.5px"
-    val borderColor = if isSel then Defaults.SelectedBorderColor else Defaults.NormalBorderColor
+    val borderColor = if isSel then Settings.selectedBorderColor.value else Settings.normalBorderColor.value
 
     container.style = s"-fx-background-color: $hexBg; -fx-border-color: $borderColor; -fx-border-width: $borderWidth;"
     label.style = s"-fx-text-fill: $hexFg; -fx-font-size: 12px;"

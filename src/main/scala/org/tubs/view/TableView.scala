@@ -8,6 +8,7 @@ import scalafx.geometry.Pos
 
 import org.tubs.table.{Table, CellKey}
 import org.tubs.utils.Todo
+import org.tubs.settings.Settings
 
 class TableView(table: Table):
   /**
@@ -40,8 +41,8 @@ class TableView(table: Table):
    * rendered.
    */
   def getCellView(key: CellKey): CellView =
-    if key.colId >= renderedCols then appendColumns(key.colId - renderedCols + Defaults.PrelookupNum)
-    if key.rowId >= renderedRows then appendRows(key.rowId - renderedRows + Defaults.PrelookupNum)
+    if key.colId >= renderedCols then appendColumns(key.colId - renderedCols + Settings.prelookupNum.value)
+    if key.rowId >= renderedRows then appendRows(key.rowId - renderedRows + Settings.prelookupNum.value)
     val (begin, rowBuf) = cells(key.rowId - 1)
     rowBuf(key.colId - 1 - begin)
 
@@ -63,12 +64,12 @@ class TableView(table: Table):
    */
   def updateHeaderHighlight(prev: CellKey, next: CellKey): Unit =
     if prev.colId != next.colId then
-      colHeaders(prev.colId-1).label.style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
-      colHeaders(next.colId-1).label.style = s"-fx-background-color: ${Defaults.HeaderActiveBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
+      colHeaders(prev.colId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
+      colHeaders(next.colId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
 
     if prev.rowId != next.rowId then
-      rowHeaders(prev.rowId-1).label.style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
-      rowHeaders(next.rowId-1).label.style = s"-fx-background-color: ${Defaults.HeaderActiveBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
+      rowHeaders(prev.rowId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
+      rowHeaders(next.rowId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
 
   /**
    * Initializes cells as a square and immediately
@@ -77,15 +78,15 @@ class TableView(table: Table):
   def createCells(): Unit = 
     // Top-left corner cell
     val corner = new Label:
-      prefWidth = Defaults.CellWidth
-      prefHeight = Defaults.CellHeight
+      prefWidth = Settings.cellWidth.value
+      prefHeight = Settings.cellHeight.value
       alignment = Pos.Center
-      style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 0.5px;"
+      style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
 
     Sections.grid.add(corner, 0, 0)
 
-    appendColumns(Defaults.DefaultCols)
-    appendRows(Defaults.DefaultRows)
+    appendColumns(Settings.defaultCols.value)
+    appendRows(Settings.defaultRows.value)
  
   /**
    * Append n rows and initializes the cells in there

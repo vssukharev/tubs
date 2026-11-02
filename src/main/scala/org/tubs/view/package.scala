@@ -21,6 +21,7 @@ import scalafx.beans.binding.Bindings.*
 import org.tubs.table.*
 import org.tubs.executor.*
 import org.tubs.loader.{Loader, LocationKind}
+import org.tubs.settings.Settings
 
 /**
  * Displays an informational pop-up dialog.
@@ -179,22 +180,22 @@ object View:
     scrollPane.onScroll = _ =>
       val vpHeight = scrollPane.viewportBounds.value.getHeight
       val vpWidth = scrollPane.viewportBounds.value.getWidth
-      val contentHeight = tableView.renderedRows * Defaults.CellHeight
-      val contentWidth = tableView.renderedCols * Defaults.CellWidth
+      val contentHeight = tableView.renderedRows * Settings.cellHeight.value
+      val contentWidth = tableView.renderedCols * Settings.cellWidth.value
 
       // Vertical check: expand rows if remaining unviewed rows <= PrelookupNum
       if contentHeight > vpHeight && vpHeight > 0 then
         val scrollY = scrollPane.vvalue.value * (contentHeight - vpHeight)
-        val lastVisibleRow = ((scrollY + vpHeight) / Defaults.CellHeight).toInt
-        if tableView.renderedRows - lastVisibleRow <= Defaults.PrelookupNum then
-          tableView.appendRows(Defaults.PrelookupNum)
+        val lastVisibleRow = ((scrollY + vpHeight) / Settings.cellHeight.value).toInt
+        if tableView.renderedRows - lastVisibleRow <= Settings.prelookupNum.value then
+          tableView.appendRows(Settings.prelookupNum.value)
 
       // Horizontal check: expand cols if remaining unviewed cols <= PrelookupNum
       if contentWidth > vpWidth && vpWidth > 0 then
         val scrollX = scrollPane.hvalue.value * (contentWidth - vpWidth)
-        val lastVisibleCol = ((scrollX + vpWidth) / Defaults.CellWidth).toInt
-        if tableView.renderedCols - lastVisibleCol <= Defaults.PrelookupNum then
-          tableView.appendColumns(Defaults.PrelookupNum)
+        val lastVisibleCol = ((scrollX + vpWidth) / Settings.cellWidth.value).toInt
+        if tableView.renderedCols - lastVisibleCol <= Settings.prelookupNum.value then
+          tableView.appendColumns(Settings.prelookupNum.value)
 
 
     // When the selection changed from content to something else
@@ -240,15 +241,15 @@ object View:
     grid.transforms = Seq(scaleTransform)
 
     Buttons.zoomOut.onAction = _ =>
-      if zoomScale.value > Defaults.MinZoomScale then
-        val factor = zoomScale.value - Defaults.ZoomStep
+      if zoomScale.value > Settings.minZoomScale.value then
+        val factor = zoomScale.value - Settings.zoomStep.value
         zoomScale.value = factor
         scaleTransform.x = factor
         scaleTransform.y = factor
 
     Buttons.zoomIn.onAction = _ =>
-      if zoomScale.value < Defaults.MaxZoomScale then
-        val factor = zoomScale.value + Defaults.ZoomStep
+      if zoomScale.value < Settings.maxZoomScale.value then
+        val factor = zoomScale.value + Settings.zoomStep.value
         zoomScale.value = factor
         scaleTransform.x = factor
         scaleTransform.y = factor
@@ -324,7 +325,7 @@ object View:
       padding = Insets(4, 10, 4, 10)
       alignment = Pos.CenterRight
       spacing = 8
-      style = s"-fx-background-color: ${Defaults.HeaderBgColor}; -fx-border-color: ${Defaults.HeaderBorderColor}; -fx-border-width: 1 0 0 0;"
+      style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 1 0 0 0;"
       children = Seq(
         new Label("Scale") { style = "-fx-text-fill: #6c757d; -fx-font-size: 12px;" },
         Buttons.zoomOut,
