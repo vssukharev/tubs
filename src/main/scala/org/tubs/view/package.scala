@@ -108,6 +108,16 @@ object View:
     currentLocationKind.value = locKind
 
   /**
+   * Modifies the appearance of current cell by applying transform function.
+   */
+  def changeAppearance(transform: CellAppearance => CellAppearance): Unit =
+    val key = selectedKey.value
+    val table = currentTable.value
+    val cell = table.getCell(key).getOrElse( table.set(key, "") )
+    cell.appearance = transform(cell.appearance)
+    tableView.getCellView(key).updateAppearance()
+
+  /**
    * Attaches event handlers for toolbar buttons, keyboard navigation, color pickers, and zoom controls.
    */
   def setupEventHandlers(): Unit =
@@ -222,19 +232,8 @@ object View:
     }
 
     // Color pickers change style of selected cell
-    fgPicker.onAction = _ =>
-      val key = selectedKey.value
-      val table = currentTable.value
-      val cell = table.getCell(key).getOrElse(table.set(key, ""))
-      cell.appearance = cell.appearance.copy(fgColor = fgPicker.value.value)
-      tableView.getCellView(key).updateAppearance()
-
-    bgPicker.onAction = _ =>
-      val key = selectedKey.value
-      val table = currentTable.value
-      val cell = table.getCell(key).getOrElse(table.set(key, ""))
-      cell.appearance = cell.appearance.copy(bgColor = bgPicker.value.value)
-      tableView.getCellView(key).updateAppearance()
+    fgPicker.onAction = _ => changeAppearance(_.copy(fgColor = fgPicker.value.value))
+    bgPicker.onAction = _ => changeAppearance(_.copy(bgColor = bgPicker.value.value))
 
     // Zoom controls
     val scaleTransform = new Scale(1.0, 1.0, 0, 0)
@@ -272,6 +271,10 @@ object View:
           selectedKey.value = CellKey(sel.colId + 1, sel.rowId)
         case _ =>
     )
+
+    // General Settings Dialog
+    Buttons.generalSettings.onAction = _ =>
+      SettingsDialog.show()
 
     // Help Dialog
     Buttons.help.onAction = _ =>

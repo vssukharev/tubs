@@ -19,10 +19,10 @@ class CellView(val key: CellKey):
     style = "-fx-font-size: 12px;"
 
   val container = new StackPane:
-    prefWidth = Settings.cellWidth.value
-    prefHeight = Settings.cellHeight.value
-    minWidth = Settings.minCellWidth.value
-    minHeight = Settings.minCellHeight.value
+    prefWidth <== Settings.cellWidth
+    prefHeight <== Settings.cellHeight
+    minWidth <== Settings.minCellWidth
+    minHeight <== Settings.minCellHeight
     alignment = Pos.CenterLeft
     children = Seq(label)
 

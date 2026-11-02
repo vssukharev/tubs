@@ -39,6 +39,7 @@ object Sections:
       Buttons.saveAsLocally,
       Buttons.saveAsRemotely,
       new Region { hgrow = Priority.Always },
+      Buttons.generalSettings,
       Buttons.help
     )
 
@@ -98,5 +99,16 @@ object Sections:
     fitToHeight = false
     hgrow = Priority.Always
     vgrow = Priority.Always
+
+  /**
+   * Refreshes background and border styles of sections according to current Settings.
+   */
+  def updateStyles(): Unit =
+    fileName.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 1px; -fx-background-radius: 4px; -fx-border-radius: 4px;"
+    selectionIndex.style = s"-fx-background-color: ${Settings.selectionPillBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-radius: 14px; -fx-background-radius: 14px; -fx-font-weight: bold; -fx-text-fill: ${Settings.headerFgColor.value}; -fx-font-size: 12px;"
+    grid.style = s"-fx-background-color: ${Settings.gridBgColor.value};"
+    fgPicker.value = Settings.defaultFgColor.value
+    bgPicker.value = Settings.defaultBgColor.value
+
   
 

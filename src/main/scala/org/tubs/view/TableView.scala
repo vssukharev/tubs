@@ -18,6 +18,12 @@ class TableView(table: Table):
    */
   private type Row = (begin: Int, content: ArrayBuffer[CellView])
 
+  val corner = new Label:
+    prefWidth <== Settings.cellWidth
+    prefHeight <== Settings.cellHeight
+    alignment = Pos.Center
+    style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
+
   val rowHeaders = ArrayBuffer[HeaderView]()
   val colHeaders = ArrayBuffer[HeaderView]()
   val cells = ArrayBuffer[Row]()
@@ -64,29 +70,42 @@ class TableView(table: Table):
    */
   def updateHeaderHighlight(prev: CellKey, next: CellKey): Unit =
     if prev.colId != next.colId then
-      colHeaders(prev.colId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
-      colHeaders(next.colId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
+      colHeaders(prev.colId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerFgColor.value};"
+      colHeaders(next.colId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerActiveFgColor.value};"
 
     if prev.rowId != next.rowId then
-      rowHeaders(prev.rowId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #495057;"
-      rowHeaders(next.rowId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #212529;"
+      rowHeaders(prev.rowId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerFgColor.value};"
+      rowHeaders(next.rowId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerActiveFgColor.value};"
 
   /**
    * Initializes cells as a square and immediately
    * adds them to a grid.
    */
   def createCells(): Unit = 
-    // Top-left corner cell
-    val corner = new Label:
-      prefWidth = Settings.cellWidth.value
-      prefHeight = Settings.cellHeight.value
-      alignment = Pos.Center
-      style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
-
     Sections.grid.add(corner, 0, 0)
-
     appendColumns(Settings.defaultCols.value)
     appendRows(Settings.defaultRows.value)
+
+  /**
+   * Refreshes corner, header, and cell styles when Settings are updated.
+   */
+  def updateAllStyles(): Unit =
+    corner.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
+    for i <- 1 to renderedRows do
+      val isSel = View.selectedKey.value.rowId == i
+      val bg = if isSel then Settings.headerActiveBgColor.value else Settings.headerBgColor.value
+      val fg = if isSel then Settings.headerActiveFgColor.value else Settings.headerFgColor.value
+      rowHeaders(i - 1).label.style = s"-fx-background-color: $bg; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: $fg;"
+
+    for j <- 1 to renderedCols do
+      val isSel = View.selectedKey.value.colId == j
+      val bg = if isSel then Settings.headerActiveBgColor.value else Settings.headerBgColor.value
+      val fg = if isSel then Settings.headerActiveFgColor.value else Settings.headerFgColor.value
+      colHeaders(j - 1).label.style = s"-fx-background-color: $bg; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: $fg;"
+
+    for (_, rowBuf) <- cells do
+      for cellView <- rowBuf do
+        cellView.updateAppearance()
  
   /**
    * Append n rows and initializes the cells in there

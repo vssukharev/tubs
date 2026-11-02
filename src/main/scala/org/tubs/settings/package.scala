@@ -4,6 +4,8 @@ package org.tubs.settings
 import scalafx.beans.property.{DoubleProperty, IntegerProperty, ObjectProperty, StringProperty}
 import scalafx.scene.paint.Color
 
+import org.tubs.table.CellAppearance
+
 /**
  * Shared configuration settings, colors, dimensions, and limits for tubs.
  */
@@ -17,6 +19,8 @@ object Settings:
   val normalBorderColor = StringProperty("#d0d7de")
   val headerBgColor = StringProperty("#f1f3f5")
   val headerActiveBgColor = StringProperty("#d0d7de")
+  val headerFgColor = StringProperty("#495057")
+  val headerActiveFgColor = StringProperty("#212529")
   val headerBorderColor = StringProperty("#ced4da")
 
   val defaultCols = IntegerProperty(26)
@@ -33,4 +37,6 @@ object Settings:
   val maxZoomScale = DoubleProperty(2.0)
 
   val zoomStep = DoubleProperty(0.1)
+
+  def defaultCellAppearance = CellAppearance(defaultFgColor.value, defaultBgColor.value)
 

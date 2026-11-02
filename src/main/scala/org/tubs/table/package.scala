@@ -10,6 +10,7 @@ import scalafx.scene.paint.Color
 
 import org.tubs.executor.{CellContent, ExprValue, FormulaParser}
 import org.tubs.utils.Todo
+import org.tubs.settings.Settings
 
 /**
  * Table contains all semantic information about 
@@ -147,7 +148,9 @@ case class Cell(content: CellContent, var appearance: CellAppearance = CellAppea
 /**
  * Properties of cell, impacting only the appearance
  */
-case class CellAppearance(fgColor: Color = Color.rgb(32, 39, 52), bgColor: Color = Color.White) derives ReadWriter
+case class CellAppearance(fgColor: Color, bgColor: Color) derives ReadWriter
+object CellAppearance:
+  def apply(): CellAppearance = Settings.defaultCellAppearance
 
 /**
  * Serializer for ScalaFX Color
