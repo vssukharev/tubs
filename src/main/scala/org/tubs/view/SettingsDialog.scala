@@ -60,7 +60,6 @@ object SettingsDialog:
     // Section 3: Appearance & Colors
     val defaultFgPicker      = new ColorPicker(Settings.defaultFgColor.value) { prefWidth = 120 }
     val defaultBgPicker      = new ColorPicker(Settings.defaultBgColor.value) { prefWidth = 120 }
-    val gridBgPicker         = new ColorPicker(Color.web(Settings.gridBgColor.value)) { prefWidth = 120 }
     val headerBgPicker       = new ColorPicker(Color.web(Settings.headerBgColor.value)) { prefWidth = 120 }
     val headerActiveBgPicker = new ColorPicker(Color.web(Settings.headerActiveBgColor.value)) { prefWidth = 120 }
     val headerFgPicker       = new ColorPicker(Color.web(Settings.headerFgColor.value)) { prefWidth = 120 }
@@ -77,19 +76,22 @@ object SettingsDialog:
 
     addGridRow(appearanceGrid, 0, "Text Color:", defaultFgPicker)
     addGridRow(appearanceGrid, 1, "Cell Background:", defaultBgPicker)
-    addGridRow(appearanceGrid, 2, "Grid Background:", gridBgPicker)
-    addGridRow(appearanceGrid, 3, "Header Background:", headerBgPicker)
-    addGridRow(appearanceGrid, 4, "Active Header BG:", headerActiveBgPicker)
-    addGridRow(appearanceGrid, 5, "Header Text Color:", headerFgPicker)
-    addGridRow(appearanceGrid, 6, "Active Header Text:", headerActiveFgPicker)
-    addGridRow(appearanceGrid, 7, "Header Border Color:", headerBorderPicker)
-    addGridRow(appearanceGrid, 8, "Selected Cell Border:", selectedBorderPicker)
-    addGridRow(appearanceGrid, 9, "Normal Cell Border:", normalBorderPicker)
-    addGridRow(appearanceGrid, 10, "Selection Pill BG:", selectionPillPicker)
+    addGridRow(appearanceGrid, 2, "Header Background:", headerBgPicker)
+    addGridRow(appearanceGrid, 3, "Active Header BG:", headerActiveBgPicker)
+    addGridRow(appearanceGrid, 4, "Header Text Color:", headerFgPicker)
+    addGridRow(appearanceGrid, 5, "Active Header Text:", headerActiveFgPicker)
+    addGridRow(appearanceGrid, 6, "Header Border Color:", headerBorderPicker)
+    addGridRow(appearanceGrid, 7, "Selected Cell Border:", selectedBorderPicker)
+    addGridRow(appearanceGrid, 8, "Normal Cell Border:", normalBorderPicker)
+    addGridRow(appearanceGrid, 9, "Selection Pill BG:", selectionPillPicker)
 
     def sectionLabel(text: String): Label =
       new Label(text):
-        style = "-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #2c3e50;"
+        style = """
+        | -fx-font-weight: bold;
+        | -fx-font-size: 13px;
+        | -fx-text-fill: #2c3e50;
+        """.stripMargin
 
     val form = new VBox:
       spacing = 10
@@ -137,46 +139,16 @@ object SettingsDialog:
         Settings.maxZoomScale.value = maxZoomSpinner.value.value
         Settings.zoomStep.value = zoomStepSpinner.value.value
 
-        val newDefaultFg       = defaultFgPicker.value.value
-        val newDefaultBg       = defaultBgPicker.value.value
-        val newGridBg          = View.toHex(gridBgPicker.value.value)
-        val newHeaderBg        = View.toHex(headerBgPicker.value.value)
-        val newHeaderActiveBg  = View.toHex(headerActiveBgPicker.value.value)
-        val newHeaderFg        = View.toHex(headerFgPicker.value.value)
-        val newHeaderActiveFg  = View.toHex(headerActiveFgPicker.value.value)
-        val newHeaderBorder    = View.toHex(headerBorderPicker.value.value)
-        val newSelectedBorder  = View.toHex(selectedBorderPicker.value.value)
-        val newNormalBorder    = View.toHex(normalBorderPicker.value.value)
-        val newSelectionPillBg = View.toHex(selectionPillPicker.value.value)
-
-        val stylesChanged =
-          Settings.defaultFgColor.value != newDefaultFg ||
-          Settings.defaultBgColor.value != newDefaultBg ||
-          Settings.gridBgColor.value != newGridBg ||
-          Settings.headerBgColor.value != newHeaderBg ||
-          Settings.headerActiveBgColor.value != newHeaderActiveBg ||
-          Settings.headerFgColor.value != newHeaderFg ||
-          Settings.headerActiveFgColor.value != newHeaderActiveFg ||
-          Settings.headerBorderColor.value != newHeaderBorder ||
-          Settings.selectedBorderColor.value != newSelectedBorder ||
-          Settings.normalBorderColor.value != newNormalBorder ||
-          Settings.selectionPillBgColor.value != newSelectionPillBg
-
-        if stylesChanged then
-          Settings.defaultFgColor.value = newDefaultFg
-          Settings.defaultBgColor.value = newDefaultBg
-          Settings.gridBgColor.value = newGridBg
-          Settings.headerBgColor.value = newHeaderBg
-          Settings.headerActiveBgColor.value = newHeaderActiveBg
-          Settings.headerFgColor.value = newHeaderFg
-          Settings.headerActiveFgColor.value = newHeaderActiveFg
-          Settings.headerBorderColor.value = newHeaderBorder
-          Settings.selectedBorderColor.value = newSelectedBorder
-          Settings.normalBorderColor.value = newNormalBorder
-          Settings.selectionPillBgColor.value = newSelectionPillBg
-
-          Sections.updateStyles()
-          if View.tableView != null then
-            View.tableView.updateAllStyles()
+        Settings.defaultFgColor.value       = defaultFgPicker.value.value
+        Settings.defaultBgColor.value       = defaultBgPicker.value.value
+        Settings.headerBgColor.value        = View.toHex(headerBgPicker.value.value)
+        Settings.headerActiveBgColor.value  = View.toHex(headerActiveBgPicker.value.value)
+        Settings.headerFgColor.value        = View.toHex(headerFgPicker.value.value)
+        Settings.headerActiveFgColor.value  = View.toHex(headerActiveFgPicker.value.value)
+        Settings.headerBorderColor.value    = View.toHex(headerBorderPicker.value.value)
+        Settings.selectedBorderColor.value  = View.toHex(selectedBorderPicker.value.value)
+        Settings.normalBorderColor.value    = View.toHex(normalBorderPicker.value.value)
+        Settings.selectionPillBgColor.value = View.toHex(selectionPillPicker.value.value)
 
       case _ =>
+

@@ -5,6 +5,7 @@ import scala.collection.mutable.{ArrayDeque, ArrayBuffer}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.GridPane
 import scalafx.geometry.Pos
+import scalafx.beans.binding.Bindings
 
 import org.tubs.table.{Table, CellKey}
 import org.tubs.utils.Todo
@@ -22,7 +23,15 @@ class TableView(table: Table):
     prefWidth <== Settings.cellWidth
     prefHeight <== Settings.cellHeight
     alignment = Pos.Center
-    style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
+    style <== Bindings.createStringBinding(
+      () => s"""
+        | -fx-background-color: ${Settings.headerBgColor.value};
+        | -fx-border-color: ${Settings.headerBorderColor.value};
+        | -fx-border-width: 0.5px;
+        """.stripMargin
+      , Settings.headerBgColor
+      , Settings.headerBorderColor
+      )
 
   val rowHeaders = ArrayBuffer[HeaderView]()
   val colHeaders = ArrayBuffer[HeaderView]()
@@ -70,12 +79,12 @@ class TableView(table: Table):
    */
   def updateHeaderHighlight(prev: CellKey, next: CellKey): Unit =
     if prev.colId != next.colId then
-      colHeaders(prev.colId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerFgColor.value};"
-      colHeaders(next.colId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerActiveFgColor.value};"
+      colHeaders(prev.colId-1).label.style <== HeaderView.styleInactive
+      colHeaders(next.colId-1).label.style <== HeaderView.styleActive
 
     if prev.rowId != next.rowId then
-      rowHeaders(prev.rowId-1).label.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerFgColor.value};"
-      rowHeaders(next.rowId-1).label.style = s"-fx-background-color: ${Settings.headerActiveBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: ${Settings.headerActiveFgColor.value};"
+      rowHeaders(prev.rowId-1).label.style <== HeaderView.styleInactive
+      rowHeaders(next.rowId-1).label.style <== HeaderView.styleActive
 
   /**
    * Initializes cells as a square and immediately
@@ -85,27 +94,6 @@ class TableView(table: Table):
     Sections.grid.add(corner, 0, 0)
     appendColumns(Settings.defaultCols.value)
     appendRows(Settings.defaultRows.value)
-
-  /**
-   * Refreshes corner, header, and cell styles when Settings are updated.
-   */
-  def updateAllStyles(): Unit =
-    corner.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px;"
-    for i <- 1 to renderedRows do
-      val isSel = View.selectedKey.value.rowId == i
-      val bg = if isSel then Settings.headerActiveBgColor.value else Settings.headerBgColor.value
-      val fg = if isSel then Settings.headerActiveFgColor.value else Settings.headerFgColor.value
-      rowHeaders(i - 1).label.style = s"-fx-background-color: $bg; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: $fg;"
-
-    for j <- 1 to renderedCols do
-      val isSel = View.selectedKey.value.colId == j
-      val bg = if isSel then Settings.headerActiveBgColor.value else Settings.headerBgColor.value
-      val fg = if isSel then Settings.headerActiveFgColor.value else Settings.headerFgColor.value
-      colHeaders(j - 1).label.style = s"-fx-background-color: $bg; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 0.5px; -fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: $fg;"
-
-    for (_, rowBuf) <- cells do
-      for cellView <- rowBuf do
-        cellView.updateAppearance()
  
   /**
    * Append n rows and initializes the cells in there

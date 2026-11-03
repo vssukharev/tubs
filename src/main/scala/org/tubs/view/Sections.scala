@@ -15,6 +15,7 @@ import scalafx.scene.transform.Scale
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.stage.FileChooser
 import scalafx.beans.property.{ObjectProperty, StringProperty, IntegerProperty, DoubleProperty}
+import scalafx.beans.binding.Bindings
 
 import org.tubs.settings.Settings
 
@@ -22,13 +23,27 @@ object Sections:
   // 1. File name (Fixed Box)
   val fileNameLabel = new Label("File name"):
     text <== View.currentFileName
-    style = "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+    style = """
+    | -fx-font-size: 14px;
+    | -fx-font-weight: bold;
+    | -fx-text-fill: #2c3e50;
+    """.stripMargin
 
   val fileName = new HBox:
     alignment = Pos.Center
     padding = Insets(5, 15, 5, 15)
-    style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 1px; -fx-background-radius: 4px; -fx-border-radius: 4px;"
     children = Seq(fileNameLabel)
+    style <== Bindings.createStringBinding(
+      () => s"""
+      | -fx-background-color: ${Settings.headerBgColor.value};
+      | -fx-border-color: ${Settings.headerBorderColor.value};
+      | -fx-border-width: 1px;
+      | -fx-background-radius: 4px;
+      | -fx-border-radius: 4px;
+      """.stripMargin
+      , Settings.headerBgColor
+      , Settings.headerBorderColor
+      )
 
   // 2. Action buttons + Help
   val fileManip = new ToolBar:
@@ -38,7 +53,7 @@ object Sections:
       Buttons.save,
       Buttons.saveAsLocally,
       Buttons.saveAsRemotely,
-      new Region { hgrow = Priority.Always },
+      new Region { hgrow = Priority.Always }, // Padding
       Buttons.generalSettings,
       Buttons.help
     )
@@ -66,7 +81,19 @@ object Sections:
     alignment = Pos.Center
     minWidth = 65
     prefHeight = 28
-    style = s"-fx-background-color: ${Settings.selectionPillBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-radius: 14px; -fx-background-radius: 14px; -fx-font-weight: bold; -fx-text-fill: #495057; -fx-font-size: 12px;"
+    style <== Bindings.createStringBinding(
+      () => s"""
+      | -fx-background-color: ${Settings.selectionPillBgColor.value}; 
+      | -fx-border-color: ${Settings.headerBorderColor.value};
+      | -fx-border-radius: 14px;
+      | -fx-background-radius: 14px;
+      | -fx-font-weight: bold;
+      | -fx-text-fill: #495057;
+      | -fx-font-size: 12px;
+      """.stripMargin
+      , Settings.selectionPillBgColor
+      , Settings.headerBorderColor
+      )
 
   val selectionContent = new TextArea:
     promptText = "Formula or text (e.g. =A1 + B2)"
@@ -75,7 +102,10 @@ object Sections:
     prefHeight = 28
     hgrow = Priority.Always
     wrapText = true
-    style = "-fx-font-family: 'monospace'; -fx-font-size: 13px;"
+    style = """
+      | -fx-font-family: 'monospace';
+      | -fx-font-size: 13px;
+      """.stripMargin
 
   val formulaInputContainer = new StackPane:
     alignment = Pos.TopLeft
@@ -90,8 +120,7 @@ object Sections:
     children = Seq(selectionIndex, formulaInputContainer)
 
   // 5. Scroll pane and inner grid sections
-  val grid = new GridPane:
-    style = s"-fx-background-color: ${Settings.gridBgColor.value};"
+  val grid = new GridPane
 
   val scrollPane = new ScrollPane:
     content = grid
@@ -99,16 +128,6 @@ object Sections:
     fitToHeight = false
     hgrow = Priority.Always
     vgrow = Priority.Always
-
-  /**
-   * Refreshes background and border styles of sections according to current Settings.
-   */
-  def updateStyles(): Unit =
-    fileName.style = s"-fx-background-color: ${Settings.headerBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-width: 1px; -fx-background-radius: 4px; -fx-border-radius: 4px;"
-    selectionIndex.style = s"-fx-background-color: ${Settings.selectionPillBgColor.value}; -fx-border-color: ${Settings.headerBorderColor.value}; -fx-border-radius: 14px; -fx-background-radius: 14px; -fx-font-weight: bold; -fx-text-fill: ${Settings.headerFgColor.value}; -fx-font-size: 12px;"
-    grid.style = s"-fx-background-color: ${Settings.gridBgColor.value};"
-    fgPicker.value = Settings.defaultFgColor.value
-    bgPicker.value = Settings.defaultBgColor.value
 
   
 

@@ -110,7 +110,7 @@ object View:
   /**
    * Modifies the appearance of current cell by applying transform function.
    */
-  def changeAppearance(transform: CellAppearance => CellAppearance): Unit =
+  def changeCurrentCellAppearance(transform: CellAppearance => CellAppearance): Unit =
     val key = selectedKey.value
     val table = currentTable.value
     val cell = table.getCell(key).getOrElse( table.set(key, "") )
@@ -232,8 +232,8 @@ object View:
     }
 
     // Color pickers change style of selected cell
-    fgPicker.onAction = _ => changeAppearance(_.copy(fgColor = fgPicker.value.value))
-    bgPicker.onAction = _ => changeAppearance(_.copy(bgColor = bgPicker.value.value))
+    fgPicker.onAction = _ => changeCurrentCellAppearance(_.copy(fgColor = fgPicker.value.value))
+    bgPicker.onAction = _ => changeCurrentCellAppearance(_.copy(bgColor = bgPicker.value.value))
 
     // Zoom controls
     val scaleTransform = new Scale(1.0, 1.0, 0, 0)
@@ -283,9 +283,8 @@ object View:
           |
           |Keyboard Controls:
           |  • Arrow Keys: Navigate adjacent cells
-          |  • Double-Click: Edit cell in-place
           |  • Enter (during edit): Commit & move to bottom cell
-          |  • Shift + Enter: Insert newline in cell / formula bar
+          |  • Shift + Enter: Insert newline in formula bar
           |
           |Formula Syntax (starts with '='):
           |  • Literals: 42, 3.14, true, false, "hello"

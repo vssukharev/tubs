@@ -5,6 +5,7 @@ import scala.collection.mutable.{ArrayDeque, ArrayBuffer}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.StackPane
 import scalafx.geometry.{Insets, Pos}
+import scalafx.beans.binding.Bindings
 
 import org.tubs.executor.ExprValue
 import org.tubs.table.CellKey
@@ -16,7 +17,6 @@ class CellView(val key: CellKey):
     padding = Insets(2, 4, 2, 4)
     maxWidth = Double.MaxValue
     maxHeight = Double.MaxValue
-    style = "-fx-font-size: 12px;"
 
   val container = new StackPane:
     prefWidth <== Settings.cellWidth
@@ -64,16 +64,45 @@ class CellView(val key: CellKey):
    */
   def updateAppearance(): Unit =
     val table = View.currentTable.value
-    val app = table.getAppearance(key)
-    val hexFg = View.toHex(app.fgColor)
-    val hexBg = View.toHex(app.bgColor)
+    val cellOpt = table.getCell(key)
+
     val isSel = View.selectedKey.value == key
-
     val borderWidth = if isSel then "2.5px" else "0.5px"
-    val borderColor = if isSel then Settings.selectedBorderColor.value else Settings.normalBorderColor.value
+    val borderColorProp = if isSel then Settings.selectedBorderColor else Settings.normalBorderColor
 
-    container.style = s"-fx-background-color: $hexBg; -fx-border-color: $borderColor; -fx-border-width: $borderWidth;"
-    label.style = s"-fx-text-fill: $hexFg; -fx-font-size: 12px;"
+    // TODO: it actually may not depend on
+    // Settings.defaultBgColor.
+    container.style <== Bindings.createStringBinding(
+      () => 
+        val bgColor = cellOpt
+          .map(_.appearance.bgColor)
+          .getOrElse(Settings.defaultBgColor.value)
+        val hexBg = View.toHex(bgColor)
+
+        s"""
+        | -fx-background-color: $hexBg;
+        | -fx-border-color: ${borderColorProp.value};
+        | -fx-border-width: $borderWidth;
+        """.stripMargin
+      , borderColorProp
+      , Settings.defaultBgColor
+      )
+
+    // TODO: the same with Settings.defauultFgColor.
+    label.style <== Bindings.createStringBinding(
+      () =>
+        val fgColor = cellOpt
+          .map(_.appearance.fgColor)
+          .getOrElse(Settings.defaultFgColor.value)
+        val hexFg = View.toHex(fgColor)
+
+        s"""
+        | -fx-text-fill: $hexFg;
+        | -fx-font-size: 12px;
+        """.stripMargin
+      , Settings.defaultFgColor
+      )
+
 
   /**
    * Re-renders the displayed text from the evaluated cell value.
