@@ -2,6 +2,7 @@
 package org.tubs.loader
 
 import scala.util.{Using, Try, Success, Failure}
+import scala.sys.process.*
 import upickle.default.*
 import scala.io.Source
 import java.io.{BufferedWriter, FileWriter, InputStreamReader, FileInputStream, File, FileNotFoundException}
@@ -167,7 +168,11 @@ object GoogleLoader:
     val receiver = LocalServerReceiver.Builder()
       .setPort(6969)
       .build()
-    AuthorizationCodeInstalledApp(flow, receiver)
+    val browser = new AuthorizationCodeInstalledApp.Browser:
+      override def browse(url: String): Unit =
+        println(s"Open URL link in your browser: $url")
+
+    AuthorizationCodeInstalledApp(flow, receiver, browser)
       .authorize("user")
 
   /**
