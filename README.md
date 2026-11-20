@@ -8,6 +8,7 @@ AI ASSISTED:
 2. Helped with setting up Json (de)serializer
 3. Scala metaprogramming assistance
 4. Scalafx frontend (lots of slop ought to be then manually unslopped)
+5. ScalaTest tests
 
 ## All possible expressions with their precedence (from lowest to highest)
 1. for ... do ...  /  if ... then ... else ...

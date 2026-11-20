@@ -183,6 +183,7 @@ object Evaluator:
         target match
           case Some(target) => 
             target.content.addDependent(content.key)
+            content.addDependency(target.content.key)
             target.content.value // Note: here the circular dependencies are handled
           case None => 
             content.error(s"Cell $key is empty and can't be referenced")

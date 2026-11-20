@@ -108,6 +108,7 @@ class CellContent(
    */
   def addDependent(depKey: CellKey): Unit    = dependents += depKey
   def removeDependent(depKey: CellKey): Unit = dependents -= depKey
+  def addDependency(depKey: CellKey): Unit   = _dependencies += depKey
 
   /**
    * Variables stack manipulation methods

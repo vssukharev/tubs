@@ -44,13 +44,16 @@ def error(message: String): Unit =
  * Helper to display a JavaFX Alert pop-up dialog on the UI thread.
  */
 private def showPopup(alertType: Alert.AlertType, titleText: String, message: String): Unit =
-  Platform.runLater {
-    val alert = new Alert(alertType):
-      title = titleText
-      headerText = None
-      contentText = message
-    alert.showAndWait()
-  }
+  try
+    Platform.runLater {
+      val alert = new Alert(alertType):
+        title = titleText
+        headerText = None
+        contentText = message
+      alert.showAndWait()
+    }
+  catch
+    case _: IllegalStateException => // Toolkit not initialized (e.g. running in unit tests)
 
 /**
  * The main View object representing the spreadsheet GUI scene.
